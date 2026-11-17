@@ -1,0 +1,370 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-serif: 'Playfair Display', Georgia, Cambria, serif;
+    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  /* Only the active language is visible; the other one stays in the DOM for instant switching. */
+  html[data-lang='en'] [data-lang='pt'],
+  html[data-lang='pt'] [data-lang='en'] {
+    display: none !important;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 7rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-cream font-sans text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serif text-ink;
+    text-wrap: balance;
+  }
+
+  h1 {
+    @apply text-[2.5rem] font-bold leading-[1.04] tracking-tight md:text-5xl lg:text-6xl;
+  }
+
+  h2 {
+    @apply text-3xl font-semibold leading-tight tracking-tight md:text-4xl;
+  }
+
+  h3 {
+    @apply text-xl font-semibold leading-snug md:text-2xl;
+  }
+
+  p {
+    @apply leading-relaxed;
+  }
+
+  ::selection {
+    @apply bg-terracotta/25 text-ink;
+  }
+
+  img {
+    @apply max-w-full;
+  }
+}
+
+@layer components {
+  .container-max {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10;
+  }
+
+  .skip-link {
+    @apply sr-only;
+  }
+
+  .skip-link:focus {
+    @apply not-sr-only fixed left-4 top-4 z-[100] rounded-full bg-ink px-4 py-2 text-sm font-semibold text-cream shadow-lift;
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-terracotta px-6 py-3 text-sm font-semibold text-white shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:bg-terracotta-dark hover:shadow-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta focus-visible:ring-offset-2 focus-visible:ring-offset-cream active:translate-y-0 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-ink/15 bg-white/70 px-6 py-3 text-sm font-semibold text-ink shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:border-terracotta/40 hover:bg-white hover:text-terracotta-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta focus-visible:ring-offset-2 focus-visible:ring-offset-cream;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-ink-light transition-colors duration-200 hover:bg-oatmeal/70 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta/50;
+  }
+
+  .btn-sm {
+    @apply px-4 py-2 text-xs;
+  }
+
+  /* ---------- Forms ---------- */
+  .input {
+    @apply block w-full rounded-2xl border border-oatmeal-dark/60 bg-white px-4 py-3 text-sm text-ink shadow-sm transition-all duration-200 placeholder:text-ink-lighter/80 focus:border-terracotta focus:outline-none focus:ring-4 focus:ring-terracotta/15;
+  }
+
+  .input-pill {
+    @apply rounded-full py-2.5 pl-11 pr-4;
+  }
+
+  .label {
+    @apply mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-ink-light;
+  }
+
+  /* ---------- Surfaces ---------- */
+  .card {
+    @apply overflow-hidden rounded-3xl border border-oatmeal bg-white shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-wider backdrop-blur-sm;
+  }
+
+  .meta-pill {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-oatmeal bg-cream px-3 py-1.5 text-xs font-medium text-ink-light;
+  }
+
+  /* ---------- Navigation ---------- */
+  .nav-tab {
+    @apply inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-medium text-ink-light transition-colors duration-200 hover:bg-oatmeal/70 hover:text-ink;
+  }
+
+  .nav-tab-active {
+    @apply bg-ink text-cream shadow-soft hover:bg-ink hover:text-cream;
+  }
+
+  /* ---------- Restaurant map ---------- */
+  .map-canvas {
+    width: 100%;
+    height: 360px;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    border: 1px solid #f0e7d9;
+    box-shadow: 0 1px 2px rgba(36, 31, 26, 0.04), 0 12px 28px -16px rgba(36, 31, 26, 0.16);
+    z-index: 0;
+  }
+
+  @media (min-width: 768px) {
+    .map-canvas {
+      height: 480px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .map-canvas {
+      height: 540px;
+    }
+  }
+
+  .map-pin {
+    display: block;
+    background: #c4694a;
+    border: 3px solid #fff;
+    border-radius: 9999px;
+    box-shadow: 0 2px 8px rgba(36, 31, 26, 0.4);
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+
+  .map-pin:hover {
+    background: #9c4c31;
+    transform: scale(1.12);
+  }
+
+  .map-popup {
+    max-width: 260px;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .map-popup-name {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #241f1a;
+  }
+
+  .map-popup-meta {
+    margin-top: 2px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9c4c31;
+  }
+
+  .map-popup-desc {
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #544b41;
+  }
+
+  .map-popup-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #f0e7d9;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .map-popup-row dt {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #8a7f74;
+  }
+
+  .map-popup-row dd {
+    margin: 0;
+    text-align: right;
+    color: #241f1a;
+  }
+
+  .map-popup-link {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #c4694a;
+    text-decoration: none;
+  }
+
+  .map-popup-link:hover {
+    color: #9c4c31;
+    text-decoration: underline;
+  }
+
+  /* ---------- Language switch ---------- */
+  .lang-switch {
+    @apply inline-flex items-center gap-0.5 rounded-full border border-oatmeal bg-white/70 p-0.5 shadow-soft;
+  }
+
+  .lang-option {
+    @apply rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-ink-lighter transition-colors duration-200 hover:text-ink;
+  }
+
+  .lang-option-active {
+    @apply bg-ink text-cream hover:text-cream;
+  }
+
+  /* ---------- Admin ---------- */
+  .admin-row {
+    @apply flex flex-col gap-3 rounded-2xl border border-oatmeal bg-white p-4 transition-colors duration-200 sm:flex-row sm:items-center sm:justify-between;
+  }
+
+  .admin-row-active {
+    @apply border-terracotta/50 ring-2 ring-terracotta/15;
+  }
+
+  .admin-thumb {
+    @apply h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-oatmeal bg-oatmeal/60 object-cover;
+  }
+
+  .status-note {
+    @apply rounded-2xl border px-4 py-3 text-sm;
+  }
+
+  .status-success {
+    @apply border-sage/40 bg-sage/10 text-sage-dark;
+  }
+
+  .status-error {
+    @apply border-terracotta/30 bg-terracotta/10 text-terracotta-dark;
+  }
+
+  .status-info {
+    @apply border-oatmeal-dark/40 bg-oatmeal/40 text-ink-light;
+  }
+
+  /* ---------- Filters ---------- */
+  .chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-oatmeal bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wider text-ink-light shadow-sm transition-all duration-200 hover:border-terracotta/30 hover:text-terracotta-dark;
+  }
+
+  .chip-active {
+    @apply border-transparent bg-ink text-cream shadow-soft hover:border-transparent hover:bg-ink hover:text-cream;
+  }
+
+  /* ---------- Typography helpers ---------- */
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-widest text-terracotta-dark;
+  }
+
+  .section-title {
+    @apply font-serif text-2xl font-semibold tracking-tight text-ink md:text-3xl;
+  }
+
+  .prose-recipe {
+    @apply text-[15px] leading-relaxed text-ink-light;
+  }
+
+  .prose-recipe p {
+    @apply mb-4 last:mb-0;
+  }
+
+  .prose-recipe em {
+    @apply font-serif not-italic text-terracotta-dark;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .bg-page-glow {
+    background-image:
+      radial-gradient(46rem 30rem at 85% -10%, rgba(196, 105, 74, 0.14), transparent 70%),
+      radial-gradient(38rem 26rem at 0% 10%, rgba(143, 163, 124, 0.18), transparent 70%);
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  .recipe-print {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  .print-stack {
+    display: block !important;
+  }
+
+  .print-hide {
+    display: none !important;
+  }
+
+  .card,
+  .shadow-lift,
+  .shadow-soft {
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  .recipe-ingredient,
+  .recipe-step {
+    break-inside: avoid;
+  }
+
+  a {
+    text-decoration: none !important;
+  }
+}

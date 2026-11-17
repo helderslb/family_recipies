@@ -1,0 +1,447 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import T from '@/components/T.astro';
+import { placeholderAttrs, translate } from '@/i18n/ui';
+
+const copy = {
+  success: { en: translate('en', 'create.success'), pt: translate('pt', 'create.success') },
+  busy: { en: translate('en', 'create.busy'), pt: translate('pt', 'create.busy') },
+  missing: { en: translate('en', 'create.errorMissing'), pt: translate('pt', 'create.errorMissing') },
+  conflict: { en: translate('en', 'create.errorConflict'), pt: translate('pt', 'create.errorConflict') },
+  signInRequired: {
+    en: translate('en', 'create.signInRequired'),
+    pt: translate('pt', 'create.signInRequired'),
+  },
+  error: { en: translate('en', 'create.error'), pt: translate('pt', 'create.error') },
+  generic: { en: translate('en', 'create.errorGeneric'), pt: translate('pt', 'create.errorGeneric') },
+};
+---
+
+<Layout
+  title={translate('en', 'create.title')}
+  titlePt={translate('pt', 'create.title')}
+  description={translate('en', 'create.subtitle')}
+  descriptionPt={translate('pt', 'create.subtitle')}
+>
+  <section class="border-b border-oatmeal/60 bg-page-glow">
+    <div class="container-max py-12 md:py-16">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="eyebrow"><T k="create.eyebrow" /></p>
+        <h1 class="mt-3"><T k="create.title" /></h1>
+        <p class="mx-auto mt-4 max-w-xl text-base text-ink-light">
+          <T k="create.subtitle" />
+        </p>
+        <a
+          href="/"
+          class="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-ink-lighter transition-colors hover:text-terracotta-dark"
+        >
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m6 6-6-6 6-6"></path>
+          </svg>
+          <T k="create.back" />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="container-max py-10 md:py-14">
+    <form id="recipe-form" action="/api/create" method="post" class="mx-auto max-w-3xl space-y-6">
+      <section class="rounded-3xl border border-oatmeal bg-white p-6 shadow-soft md:p-8">
+        <h2 class="font-serif text-xl font-semibold tracking-tight"><T k="create.basics" /></h2>
+        <p class="mt-1 text-sm text-ink-light"><T k="create.basicsHelp" /></p>
+
+        <div class="mt-6 grid gap-5 sm:grid-cols-2">
+          <div class="sm:col-span-2">
+            <label for="title" class="label"><T k="create.titleLabel" /></label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              {...placeholderAttrs('create.titlePlaceholder')}
+              class="input"
+              required
+            />
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="description" class="label"><T k="create.descriptionLabel" /></label>
+            <textarea
+              id="description"
+              name="description"
+              rows="3"
+              {...placeholderAttrs('create.descriptionPlaceholder')}
+              class="input resize-y"
+              required
+            ></textarea>
+          </div>
+
+          <div>
+            <label for="author" class="label"><T k="create.author" /></label>
+            <input
+              type="text"
+              id="author"
+              name="author"
+              {...placeholderAttrs('create.authorPlaceholder')}
+              class="input"
+              required
+            />
+          </div>
+
+          <div>
+            <label for="family" class="label"><T k="create.family" /></label>
+            <select id="family" name="family" class="input" required>
+              <option value="Grandma" data-option-en="Grandma" data-option-pt="Avó">Grandma</option>
+              <option value="Mom" data-option-en="Mom" data-option-pt="Mãe">Mom</option>
+              <option value="Family" data-option-en="Family" data-option-pt="Família">Family</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="category" class="label"><T k="create.category" /></label>
+            <select id="category" name="category" class="input" required>
+              <option value="Mains" data-option-en="Mains" data-option-pt="Pratos principais">Mains</option>
+              <option value="Desserts" data-option-en="Desserts" data-option-pt="Sobremesas">Desserts</option>
+              <option value="Baking" data-option-en="Baking" data-option-pt="Padaria e bolos">Baking</option>
+              <option value="Sides" data-option-en="Sides" data-option-pt="Acompanhamentos">Sides</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="servings" class="label"><T k="create.servings" /></label>
+            <input
+              type="text"
+              id="servings"
+              name="servings"
+              {...placeholderAttrs('create.servingsPlaceholder')}
+              class="input"
+              required
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="rounded-3xl border border-oatmeal bg-white p-6 shadow-soft md:p-8">
+        <h2 class="font-serif text-xl font-semibold tracking-tight"><T k="create.timing" /></h2>
+        <p class="mt-1 text-sm text-ink-light"><T k="create.timingHelp" /></p>
+
+        <div class="mt-6 grid gap-5 sm:grid-cols-3">
+          <div>
+            <label for="prepTime" class="label"><T k="create.prep" /></label>
+            <input
+              type="text"
+              id="prepTime"
+              name="prepTime"
+              {...placeholderAttrs('create.prepPlaceholder')}
+              class="input"
+              required
+            />
+          </div>
+          <div>
+            <label for="cookTime" class="label"><T k="create.cook" /></label>
+            <input
+              type="text"
+              id="cookTime"
+              name="cookTime"
+              {...placeholderAttrs('create.cookPlaceholder')}
+              class="input"
+              required
+            />
+          </div>
+          <div>
+            <label for="totalTime" class="label"><T k="create.total" /></label>
+            <input
+              type="text"
+              id="totalTime"
+              name="totalTime"
+              {...placeholderAttrs('create.totalPlaceholder')}
+              class="input"
+              required
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="rounded-3xl border border-oatmeal bg-white p-6 shadow-soft md:p-8">
+        <h2 class="font-serif text-xl font-semibold tracking-tight"><T k="create.media" /></h2>
+        <p class="mt-1 text-sm text-ink-light"><T k="create.mediaHelp" /></p>
+
+        <div class="mt-6 grid gap-5">
+          <div>
+            <label for="image" class="label"><T k="create.image" /></label>
+            <input
+              type="text"
+              id="image"
+              name="image"
+              {...placeholderAttrs('create.imagePlaceholder')}
+              class="input"
+              required
+            />
+            <p class="mt-1.5 text-xs text-ink-lighter"><T k="create.imageHelp" /></p>
+          </div>
+
+          <div>
+            <label for="video" class="label"><T k="create.video" /></label>
+            <input
+              type="url"
+              id="video"
+              name="video"
+              placeholder="https://www.youtube.com/watch?v=…"
+              class="input"
+            />
+            <p class="mt-1.5 text-xs text-ink-lighter"><T k="create.videoHelp" /></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="rounded-3xl border border-oatmeal bg-white p-6 shadow-soft md:p-8">
+        <h2 class="font-serif text-xl font-semibold tracking-tight">
+          <T k="create.ingredientsSection" />
+        </h2>
+        <p class="mt-1 text-sm text-ink-light"><T k="create.ingredientsHelp" /></p>
+
+        <div class="mt-6 grid gap-5">
+          <div>
+            <label for="ingredients" class="label"><T k="create.ingredients" /></label>
+            <textarea
+              id="ingredients"
+              name="ingredients"
+              rows="7"
+              placeholder="2 cups flour&#10;1 tsp salt&#10;3 eggs…"
+              class="input resize-y font-mono text-[13px] leading-relaxed"
+              required
+            ></textarea>
+          </div>
+
+          <div>
+            <label for="steps" class="label"><T k="create.steps" /></label>
+            <textarea
+              id="steps"
+              name="steps"
+              rows="9"
+              placeholder="Preheat the oven to 350°F.&#10;Mix all ingredients in a bowl.&#10;Bake for 25–30 minutes…"
+              class="input resize-y font-mono text-[13px] leading-relaxed"
+              required
+            ></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="rounded-3xl border border-oatmeal bg-white p-6 shadow-soft md:p-8">
+        <h2 class="font-serif text-xl font-semibold tracking-tight">
+          <T k="admin.storySection" />
+        </h2>
+        <div class="mt-6 grid gap-5">
+          <div>
+            <label for="story" class="label"><T k="admin.story" /></label>
+            <textarea
+              id="story"
+              name="story"
+              rows="4"
+              {...placeholderAttrs('admin.storyPlaceholder')}
+              class="input resize-y"
+            ></textarea>
+          </div>
+          <div>
+            <label for="storyPt" class="label"><T k="admin.storyPt" /></label>
+            <textarea
+              id="storyPt"
+              name="storyPt"
+              rows="4"
+              {...placeholderAttrs('admin.storyPtPlaceholder')}
+              class="input resize-y"
+            ></textarea>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="rounded-3xl border border-oatmeal bg-white p-6 shadow-soft md:p-8">
+        <h2 class="font-serif text-xl font-semibold tracking-tight">
+          <T k="admin.portuguese" />
+        </h2>
+        <p class="mt-1 text-sm text-ink-light"><T k="create.ingredientsHelp" /></p>
+
+        <div class="mt-6 grid gap-5">
+          <div>
+            <label for="titlePt" class="label"><T k="admin.titlePt" /></label>
+            <input
+              type="text"
+              id="titlePt"
+              name="titlePt"
+              {...placeholderAttrs('admin.titlePtPlaceholder')}
+              class="input"
+            />
+          </div>
+
+          <div>
+            <label for="descriptionPt" class="label"><T k="admin.descriptionPt" /></label>
+            <textarea id="descriptionPt" name="descriptionPt" rows="3" class="input resize-y"></textarea>
+          </div>
+
+          <div>
+            <label for="ingredientsPt" class="label"><T k="admin.ingredientsPt" /></label>
+            <textarea
+              id="ingredientsPt"
+              name="ingredientsPt"
+              rows="7"
+              class="input resize-y font-mono text-[13px] leading-relaxed"
+            ></textarea>
+          </div>
+
+          <div>
+            <label for="stepsPt" class="label"><T k="admin.stepsPt" /></label>
+            <textarea
+              id="stepsPt"
+              name="stepsPt"
+              rows="9"
+              class="input resize-y font-mono text-[13px] leading-relaxed"
+            ></textarea>
+          </div>
+        </div>
+      </section>
+
+      <div class="flex flex-col-reverse items-stretch gap-4 border-t border-oatmeal pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-xs text-ink-lighter">
+          <T k="create.savedIn" />
+          <code class="rounded bg-white px-1.5 py-0.5">src/content/recipes</code>.
+        </p>
+        <button type="submit" class="btn">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <T k="create.submit" />
+        </button>
+      </div>
+    </form>
+
+    <div id="form-message" class="mx-auto mt-6 hidden max-w-3xl rounded-2xl border px-4 py-3 text-sm" role="status">
+      <p id="form-message-text"></p>
+    </div>
+  </div>
+
+
+  <script define:vars={{ copy }}>
+    (function () {
+      const form = document.getElementById('recipe-form');
+      const message = document.getElementById('form-message');
+      const messageText = document.getElementById('form-message-text');
+      const submitButton = form ? form.querySelector('button[type="submit"]') : null;
+      const submitLabel = submitButton ? submitButton.innerHTML : '';
+
+      function lang() {
+        return document.documentElement.getAttribute('data-lang') === 'pt' ? 'pt' : 'en';
+      }
+
+      function text(key) {
+        const entry = copy[key];
+        if (!entry) return '';
+        return entry[lang()] || entry.en;
+      }
+
+      function showMessage(value, tone) {
+        if (!message || !messageText) return;
+
+        messageText.textContent = value;
+        message.classList.remove(
+          'hidden',
+          'border-sage/40',
+          'bg-sage/10',
+          'text-sage-dark',
+          'border-terracotta/30',
+          'bg-terracotta/10',
+          'text-terracotta-dark'
+        );
+
+        const palette =
+          tone === 'success'
+            ? ['border-sage/40', 'bg-sage/10', 'text-sage-dark']
+            : ['border-terracotta/30', 'bg-terracotta/10', 'text-terracotta-dark'];
+
+        message.classList.add(...palette);
+      }
+
+      function setBusy(busy) {
+        if (!submitButton) return;
+        submitButton.disabled = busy;
+        submitButton.textContent = busy ? text('busy') : '';
+        if (!busy) submitButton.innerHTML = submitLabel;
+      }
+
+      // Only the admin may publish — send anonymous visitors to the login screen.
+      if (form && typeof window.fetch === 'function') {
+        window
+          .fetch('/api/auth/session', { headers: { Accept: 'application/json' } })
+          .then(function (response) {
+            return response.ok ? response.json() : null;
+          })
+          .then(function (data) {
+            if (!data || !data.authenticated) {
+              window.location.replace('/admin/login/?next=/create');
+            }
+          })
+          .catch(function () {
+            /* preview/static hosting — the API will still reject the write */
+          });
+      }
+
+      if (form) {
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+          setBusy(true);
+
+          window
+            .fetch('/api/create', {
+              method: 'POST',
+              body: new FormData(form),
+              headers: { Accept: 'application/json' },
+            })
+            .then(function (response) {
+              return response
+                .json()
+                .catch(function () {
+                  return {};
+                })
+                .then(function (result) {
+                  return { ok: response.ok, status: response.status, result: result };
+                });
+            })
+            .then(function (outcome) {
+              if (outcome.ok) {
+                showMessage(text('success'), 'success');
+                form.reset();
+
+                window.setTimeout(function () {
+                  window.location.href = '/recipes/' + outcome.result.slug + '/';
+                }, 1200);
+                return;
+              }
+
+              if (outcome.status === 401) {
+                showMessage(text('signInRequired'), 'error');
+                window.setTimeout(function () {
+                  window.location.replace('/admin/login/?next=/create');
+                }, 1500);
+                setBusy(false);
+                return;
+              }
+
+              if (outcome.status === 409) {
+                showMessage(text('conflict'), 'error');
+              } else if (outcome.status === 400) {
+                showMessage(text('missing'), 'error');
+              } else {
+                showMessage(text('error'), 'error');
+              }
+
+              setBusy(false);
+            })
+            .catch(function () {
+              showMessage(text('generic'), 'error');
+              setBusy(false);
+            });
+        });
+      }
+    })();
+  </script>
+</Layout>
+

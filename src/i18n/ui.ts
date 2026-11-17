@@ -1,0 +1,555 @@
+/**
+ * Every visible string on the marketing site and in the admin area,
+ * in English and Portuguese.
+ *
+ * Both languages are rendered into the HTML by the <T /> component and CSS
+ * hides the inactive one (see `[data-lang]` rules in src/styles/global.css).
+ * The choice is persisted in localStorage by the script in Layout.astro.
+ */
+
+export const languages = { en: 'English', pt: 'Português' } as const;
+export type Lang = keyof typeof languages;
+
+export const defaultLang: Lang = 'en';
+
+export const en = {
+  'brand.name': 'Family Recipes',
+
+  // ---------- Header / navigation ----------
+  'skip.link': 'Skip to main content',
+  'nav.home': 'Family Recipes — home',
+  'nav.collections': 'Recipe collections',
+  'nav.all': 'All recipes',
+  'nav.popular': 'Popular',
+  'nav.mom': "Mom's food",
+  'nav.grandma': "Grandma's food",
+  'nav.restaurants': 'Restaurants',
+  'nav.search': 'Search recipes',
+  'nav.search.placeholder': 'Search recipes…',
+  'nav.search.placeholderMobile': 'Search by name, ingredient…',
+  'nav.add': 'Add recipe',
+  'nav.addLong': 'Add a recipe',
+  'nav.openMenu': 'Open menu',
+  'nav.closeMenu': 'Close menu',
+  'nav.language': 'Language',
+  'nav.language.en': 'English',
+  'nav.language.pt': 'Português',
+
+  // ---------- Footer ----------
+  'footer.tagline': 'Recipes shared with love, one generation at a time.',
+  'footer.explore': 'Explore',
+  'footer.popular': 'Popular recipes',
+  'footer.restaurants': 'Restaurant map',
+  'footer.contribute': 'Contribute',
+  'footer.add': 'Add a recipe',
+  'footer.backToTop': 'Back to top',
+  'footer.share': 'Share a family dish',
+  'footer.rights': 'Family Recipes. Made with love in the kitchen.',
+  'footer.built': 'Built with Astro & Tailwind CSS',
+
+  // ---------- Collections ----------
+  'collection.all.eyebrow': 'Our family cookbook',
+  'collection.all.titlePrefix': 'Recipes worth',
+  'collection.all.titleAccent': 'passing down',
+  'collection.all.title': 'Recipes worth passing down',
+  'collection.all.subtitle':
+    'A living collection of the dishes that shaped our family — handwritten notes, Sunday classics and the little tricks nobody wrote down.',
+  'collection.all.section': 'All recipes',
+  'collection.all.sectionEyebrow': 'Fresh from the kitchen',
+  'collection.popular.eyebrow': 'Most loved',
+  'collection.popular.title': 'Popular recipes',
+  'collection.popular.subtitle':
+    'The dishes that get requested again and again at every family gathering.',
+  'collection.popular.section': 'Most loved recipes',
+  'collection.popular.sectionEyebrow': 'Family favourites',
+  'collection.mom.eyebrow': "Mom's kitchen",
+  'collection.mom.title': "Mom's food",
+  'collection.mom.subtitle': "Weeknight comfort and after-school treats, straight from Mom's recipe box.",
+  'collection.mom.section': "From Mom's kitchen",
+  'collection.mom.sectionEyebrow': "What's inside",
+  'collection.grandma.eyebrow': "Grandma's kitchen",
+  'collection.grandma.title': "Grandma's food",
+  'collection.grandma.subtitle': 'Timeless classics, slow Sundays and the recipes that started it all.',
+  'collection.grandma.section': "From Grandma's kitchen",
+  'collection.grandma.sectionEyebrow': "What's inside",
+  'collection.stats.recipes': 'Recipes',
+  'collection.stats.kitchens': 'Kitchens',
+  'collection.stats.categories': 'Categories',
+  'collection.browse': 'Browse the collection',
+  'collection.share': 'Share a recipe',
+  'collection.featured': 'Featured recipe',
+  'collection.view': 'View the recipe',
+  'collection.back': 'Back to all recipes',
+  'collection.search': 'Search recipes',
+  'collection.search.placeholder': 'Search by name, ingredient, or family member…',
+  'collection.category': 'Category',
+  'collection.all': 'All',
+  'collection.family': 'From the kitchen of',
+  'collection.everyone': 'Everyone',
+  'collection.results.one': 'recipe',
+  'collection.results.many': 'recipes',
+  'collection.empty.title': 'No recipes match that search',
+  'collection.empty.body': 'Try another ingredient, or clear the filters to see the whole collection again.',
+  'collection.empty.reset': 'Clear filters',
+
+  // ---------- Recipe cards ----------
+  'card.featured': 'Featured',
+  'card.view': 'View recipe',
+  'card.by': 'by',
+  'card.viewAria': 'View recipe',
+
+  // ---------- Recipe page ----------
+  'recipe.breadcrumb': 'All recipes',
+  'recipe.familySuffix': 'recipe',
+  'recipe.familyPrefix': 'Recipe of',
+  'recipe.fromKitchen': 'From the kitchen of',
+  'recipe.prep': 'Prep',
+  'recipe.cook': 'Cook',
+  'recipe.total': 'Total',
+  'recipe.serves': 'Serves',
+  'recipe.print': 'Print recipe',
+  'recipe.jump': 'Jump to ingredients',
+  'recipe.totalSuffix': 'total',
+  'recipe.ingredients': 'ingredients',
+  'recipe.story': 'Family story & notes',
+  'recipe.method': 'Method',
+  'recipe.ingredientsTitle': 'Ingredients',
+  'recipe.tick': 'Tick off as you cook',
+  'recipe.keepCooking': 'Keep cooking',
+  'recipe.related': 'More from the family cookbook',
+  'recipe.viewAll': 'All recipes',
+  'recipe.video': 'cooking video',
+
+  // ---------- Restaurants map ----------
+  'restaurants.eyebrow': 'Out & about',
+  'restaurants.title': 'Our favourite restaurants',
+  'restaurants.subtitle':
+    'The places around northern Portugal (and beyond) we keep going back to — with honest notes on the food, the price and the vibe.',
+  'restaurants.mapTitle': 'Restaurant map',
+  'restaurants.mapHint': 'Click a pin to see the details',
+  'restaurants.listTitle': 'The full list',
+  'restaurants.count': 'places saved',
+  'restaurants.quality': 'Quality / price',
+  'restaurants.ambience': 'Ambience',
+  'restaurants.rating': 'Final rating',
+  'restaurants.price': 'Price',
+  'restaurants.notes': 'Notes',
+  'restaurants.saved': 'Saved',
+  'restaurants.visit': 'Visit website',
+
+  // ---------- Add recipe form ----------
+  'create.eyebrow': 'Contribute',
+  'create.title': 'Add a family recipe',
+  'create.subtitle':
+    'Write down the dish everyone asks you for. Fill in what you know — the story matters just as much as the measurements.',
+  'create.back': 'Back to all recipes',
+  'create.basics': 'The basics',
+  'create.basicsHelp': 'What is it called, and why is it special?',
+  'create.titleLabel': 'Recipe title',
+  'create.titlePlaceholder': "e.g. Grandma's Apple Pie",
+  'create.descriptionLabel': 'Short description',
+  'create.descriptionPlaceholder': 'Tell us about this recipe — what makes it special?',
+  'create.author': 'Author',
+  'create.authorPlaceholder': 'e.g. Grandma Rose',
+  'create.family': 'Family',
+  'create.category': 'Category',
+  'create.servings': 'Servings',
+  'create.servingsPlaceholder': 'e.g. 6',
+  'create.timing': 'Timing',
+  'create.timingHelp': 'Rough numbers are fine — “about 45 mins” works.',
+  'create.prep': 'Prep time',
+  'create.prepPlaceholder': '20 mins',
+  'create.cook': 'Cook time',
+  'create.cookPlaceholder': '45 mins',
+  'create.total': 'Total time',
+  'create.totalPlaceholder': '1 hr 5 mins',
+  'create.media': 'Photos & video',
+  'create.mediaHelp':
+    'A good photo makes the recipe feel like home. You can use a local path from public/images or any image URL.',
+  'create.image': 'Image',
+  'create.imagePlaceholder': '/images/my-dish.jpeg or https://…',
+  'create.imageHelp': 'Landscape shots work best — roughly 4:3 or 16:9.',
+  'create.video': 'Video (optional)',
+  'create.videoHelp': 'YouTube links or a direct .mp4 URL.',
+  'create.ingredientsSection': 'Ingredients & method',
+  'create.ingredientsHelp': 'One ingredient or step per line — we turn them into a checklist.',
+  'create.ingredients': 'Ingredients',
+  'create.steps': 'Steps',
+  'create.savedIn': 'Saved as a markdown file in',
+  'create.submit': 'Publish recipe',
+  'create.busy': 'Publishing…',
+  'create.success': 'Recipe published — taking you to the page…',
+  'create.errorMissing': 'Please fill in every required field.',
+  'create.errorConflict': 'A recipe with this title already exists.',
+  'create.error': 'Could not publish this recipe. Please try again.',
+  'create.errorGeneric': 'Something went wrong. Please try again.',
+  'create.signInRequired': 'Sign in as the admin to publish a recipe.',
+
+  // ---------- Shared ----------
+  'common.signIn': 'Sign in',
+  'common.signOut': 'Sign out',
+  'common.username': 'Username',
+  'common.password': 'Password',
+  'common.cancel': 'Cancel',
+  'common.save': 'Save changes',
+  'common.saving': 'Saving…',
+  'common.edit': 'Edit',
+  'common.view': 'View',
+  'common.loading': 'Loading…',
+  'common.optional': 'optional',
+  'common.required': 'Required',
+  'common.admin': 'Admin',
+
+  // ---------- Login ----------
+  'login.eyebrow': 'Admin area',
+  'login.title': 'Sign in to manage recipes',
+  'login.subtitle': 'Only the family admin can edit the cookbook.',
+  'login.submit': 'Sign in',
+  'login.error': 'Incorrect username or password.',
+  'login.back': 'Back to the cookbook',
+  'login.devNotice': 'The admin tools run on the local Node server (npm run dev, or npm start after a build).',
+
+  // ---------- Admin dashboard ----------
+  'admin.eyebrow': 'Admin area',
+  'admin.title': 'Manage recipes',
+  'admin.subtitle': 'Update everything already in the cookbook — once in English, once in Portuguese.',
+  'admin.signedInAs': 'Signed in as',
+  'admin.signedOut': 'Your session has ended. Please sign in again.',
+  'admin.addNew': 'Add a new recipe',
+  'admin.listTitle': 'Recipes in the cookbook',
+  'admin.listEmpty': 'No recipes found yet.',
+  'admin.loading': 'Loading recipes…',
+  'admin.loadError': 'Could not load the recipes. Try reloading the page.',
+  'admin.devNotice': 'The admin tools need the local Node server. Run npm run dev, or npm start after a build.',
+  'admin.editTitle': 'Editing recipe',
+  'admin.english': 'English version',
+  'admin.portuguese': 'Portuguese version',
+  'admin.story': 'Family story (English)',
+  'admin.storyPlaceholder': 'The memories behind this dish…',
+  'admin.storyPt': 'Family story (Portuguese)',
+  'admin.storyPtPlaceholder': 'As memórias por trás deste prato…',
+  'admin.titlePt': 'Portuguese title',
+  'admin.titlePtPlaceholder': 'e.g. Arroz de Bacalhau à Portuguesa',
+  'admin.descriptionPt': 'Portuguese description',
+  'admin.ingredientsPt': 'Portuguese ingredients',
+  'admin.stepsPt': 'Portuguese steps',
+  'admin.featured': 'Featured recipe',
+  'admin.saved': 'Recipe saved.',
+  'admin.rebuildHint': 'Recipe saved. Run npm run build to refresh the published pages.',
+  'admin.saveError': 'Could not save this recipe.',
+  'admin.saveErrorSession': 'Your session has ended. Please sign in again.',
+  'admin.noSelection': 'Pick a recipe from the list to start editing.',
+  'admin.times': 'Times & servings',
+  'admin.basics': 'Recipe details',
+  'admin.translations': 'Translations',
+  'admin.storySection': 'Family story',
+  'admin.viewPublished': 'View published page',
+  'admin.badge.bilingual': 'Bilingual',
+  'admin.missingPt': 'Missing Portuguese translation',
+
+  // ---------- Category / family labels ----------
+  'category.Mains': 'Mains',
+  'category.Desserts': 'Desserts',
+  'category.Baking': 'Baking',
+  'category.Sides': 'Sides',
+  'family.Grandma': 'Grandma',
+  'family.Mom': 'Mom',
+  'family.Family': 'Family',
+} as const;
+
+export type UIKey = keyof typeof en;
+
+export const pt: Record<UIKey, string> = {
+  'brand.name': 'Receitas da Família',
+
+  // ---------- Header / navigation ----------
+  'skip.link': 'Saltar para o conteúdo principal',
+  'nav.home': 'Receitas da Família — início',
+  'nav.collections': 'Coleções de receitas',
+  'nav.all': 'Todas as receitas',
+  'nav.popular': 'Populares',
+  'nav.mom': 'Comida da mãe',
+  'nav.grandma': 'Comida da avó',
+  'nav.restaurants': 'Restaurantes',
+  'nav.search': 'Pesquisar receitas',
+  'nav.search.placeholder': 'Pesquisar receitas…',
+  'nav.search.placeholderMobile': 'Pesquisar por nome, ingrediente…',
+  'nav.add': 'Adicionar receita',
+  'nav.addLong': 'Adicionar uma receita',
+  'nav.openMenu': 'Abrir menu',
+  'nav.closeMenu': 'Fechar menu',
+  'nav.language': 'Idioma',
+  'nav.language.en': 'English',
+  'nav.language.pt': 'Português',
+
+  // ---------- Footer ----------
+  'footer.tagline': 'Receitas partilhadas com amor, geração após geração.',
+  'footer.explore': 'Explorar',
+  'footer.popular': 'Receitas populares',
+  'footer.restaurants': 'Mapa de restaurantes',
+  'footer.contribute': 'Contribuir',
+  'footer.add': 'Adicionar uma receita',
+  'footer.backToTop': 'Voltar ao topo',
+  'footer.share': 'Partilhar um prato de família',
+  'footer.rights': 'Receitas da Família. Feito com amor na cozinha.',
+  'footer.built': 'Criado com Astro e Tailwind CSS',
+
+  // ---------- Collections ----------
+  'collection.all.eyebrow': 'O livro de receitas da família',
+  'collection.all.titlePrefix': 'Receitas para passar',
+  'collection.all.titleAccent': 'de geração em geração',
+  'collection.all.title': 'Receitas para passar de geração em geração',
+  'collection.all.subtitle':
+    'Uma coleção viva dos pratos que marcaram a nossa família — notas à mão, clássicos de domingo e os pequenos truques que ninguém escreveu.',
+  'collection.all.section': 'Todas as receitas',
+  'collection.all.sectionEyebrow': 'Diretamente da cozinha',
+  'collection.popular.eyebrow': 'As mais queridas',
+  'collection.popular.title': 'Receitas populares',
+  'collection.popular.subtitle':
+    'Os pratos que são pedidos vezes sem conta em todos os encontros de família.',
+  'collection.popular.section': 'Receitas mais queridas',
+  'collection.popular.sectionEyebrow': 'Favoritas da família',
+  'collection.mom.eyebrow': 'Cozinha da mãe',
+  'collection.mom.title': 'Comida da mãe',
+  'collection.mom.subtitle':
+    'Conforto para dias de semana e doces depois da escola, diretos da caixa de receitas da mãe.',
+  'collection.mom.section': 'Da cozinha da mãe',
+  'collection.mom.sectionEyebrow': 'O que está dentro',
+  'collection.grandma.eyebrow': 'Cozinha da avó',
+  'collection.grandma.title': 'Comida da avó',
+  'collection.grandma.subtitle':
+    'Clássicos intemporais, domingos demorados e as receitas que deram início a tudo.',
+  'collection.grandma.section': 'Da cozinha da avó',
+  'collection.grandma.sectionEyebrow': 'O que está dentro',
+  'collection.stats.recipes': 'Receitas',
+  'collection.stats.kitchens': 'Cozinhas',
+  'collection.stats.categories': 'Categorias',
+  'collection.browse': 'Explorar a coleção',
+  'collection.share': 'Partilhar uma receita',
+  'collection.featured': 'Receita em destaque',
+  'collection.view': 'Ver a receita',
+  'collection.back': 'Voltar a todas as receitas',
+  'collection.search': 'Pesquisar receitas',
+  'collection.search.placeholder': 'Pesquisar por nome, ingrediente ou familiar…',
+  'collection.category': 'Categoria',
+  'collection.all': 'Todas',
+  'collection.family': 'Da cozinha de',
+  'collection.everyone': 'Todos',
+  'collection.results.one': 'receita',
+  'collection.results.many': 'receitas',
+  'collection.empty.title': 'Nenhuma receita corresponde à pesquisa',
+  'collection.empty.body':
+    'Experimente outro ingrediente ou limpe os filtros para ver toda a coleção.',
+  'collection.empty.reset': 'Limpar filtros',
+
+  // ---------- Recipe cards ----------
+  'card.featured': 'Destaque',
+  'card.view': 'Ver receita',
+  'card.by': 'por',
+  'card.viewAria': 'Ver receita',
+
+  // ---------- Recipe page ----------
+  'recipe.breadcrumb': 'Todas as receitas',
+  'recipe.familySuffix': 'receita',
+  'recipe.familyPrefix': 'Receita da',
+  'recipe.fromKitchen': 'Da cozinha de',
+  'recipe.prep': 'Preparação',
+  'recipe.cook': 'Cozedura',
+  'recipe.total': 'Total',
+  'recipe.serves': 'Serve',
+  'recipe.print': 'Imprimir receita',
+  'recipe.jump': 'Ir para os ingredientes',
+  'recipe.totalSuffix': 'no total',
+  'recipe.ingredients': 'ingredientes',
+  'recipe.story': 'História e notas da família',
+  'recipe.method': 'Modo de preparação',
+  'recipe.ingredientsTitle': 'Ingredientes',
+  'recipe.tick': 'Marque à medida que cozinha',
+  'recipe.keepCooking': 'Continue a cozinhar',
+  'recipe.related': 'Mais do livro de receitas da família',
+  'recipe.viewAll': 'Todas as receitas',
+  'recipe.video': 'vídeo de confeção',
+
+  // ---------- Restaurants map ----------
+  'restaurants.eyebrow': 'Para comer fora',
+  'restaurants.title': 'Os nossos restaurantes favoritos',
+  'restaurants.subtitle':
+    'Os sítios do norte de Portugal (e não só) a que voltamos sempre — com notas sinceras sobre a comida, o preço e o ambiente.',
+  'restaurants.mapTitle': 'Mapa de restaurantes',
+  'restaurants.mapHint': 'Clica num marcador para veres os detalhes',
+  'restaurants.listTitle': 'A lista completa',
+  'restaurants.count': 'sítios guardados',
+  'restaurants.quality': 'Qualidade / preço',
+  'restaurants.ambience': 'Ambiente',
+  'restaurants.rating': 'Avaliação final',
+  'restaurants.price': 'Preço',
+  'restaurants.notes': 'Notas',
+  'restaurants.saved': 'Guardado',
+  'restaurants.visit': 'Visitar site',
+
+  // ---------- Add recipe form ----------
+  'create.eyebrow': 'Contribuir',
+  'create.title': 'Adicionar uma receita da família',
+  'create.subtitle':
+    'Escreva o prato que todos lhe pedem. Preencha o que souber — a história importa tanto como as medidas.',
+  'create.back': 'Voltar a todas as receitas',
+  'create.basics': 'O essencial',
+  'create.basicsHelp': 'Como se chama e porque é especial?',
+  'create.titleLabel': 'Nome da receita',
+  'create.titlePlaceholder': 'ex.: Tarte de Maçã da Avó',
+  'create.descriptionLabel': 'Descrição curta',
+  'create.descriptionPlaceholder': 'Fale-nos desta receita — o que a torna especial?',
+  'create.author': 'Autor',
+  'create.authorPlaceholder': 'ex.: Avó Rosa',
+  'create.family': 'Família',
+  'create.category': 'Categoria',
+  'create.servings': 'Doses',
+  'create.servingsPlaceholder': 'ex.: 6',
+  'create.timing': 'Tempos',
+  'create.timingHelp': 'Números aproximados servem — “cerca de 45 min” está bem.',
+  'create.prep': 'Tempo de preparação',
+  'create.prepPlaceholder': '20 min',
+  'create.cook': 'Tempo de cozedura',
+  'create.cookPlaceholder': '45 min',
+  'create.total': 'Tempo total',
+  'create.totalPlaceholder': '1 h 5 min',
+  'create.media': 'Fotos e vídeo',
+  'create.mediaHelp':
+    'Uma boa fotografia faz a receita sentir-se em casa. Pode usar um caminho local em public/images ou qualquer URL de imagem.',
+  'create.image': 'Imagem',
+  'create.imagePlaceholder': '/images/o-meu-prato.jpeg ou https://…',
+  'create.imageHelp': 'Fotografias na horizontal funcionam melhor — cerca de 4:3 ou 16:9.',
+  'create.video': 'Vídeo (opcional)',
+  'create.videoHelp': 'Ligações do YouTube ou um URL direto .mp4.',
+  'create.ingredientsSection': 'Ingredientes e preparação',
+  'create.ingredientsHelp':
+    'Um ingrediente ou passo por linha — transformamos numa lista de verificação.',
+  'create.ingredients': 'Ingredientes',
+  'create.steps': 'Passos',
+  'create.savedIn': 'Guardado como ficheiro markdown em',
+  'create.submit': 'Publicar receita',
+  'create.busy': 'A publicar…',
+  'create.success': 'Receita publicada — a redirecionar para a página…',
+  'create.errorMissing': 'Preencha todos os campos obrigatórios.',
+  'create.errorConflict': 'Já existe uma receita com este nome.',
+  'create.error': 'Não foi possível publicar esta receita. Tente novamente.',
+  'create.errorGeneric': 'Algo correu mal. Tente novamente.',
+  'create.signInRequired': 'Inicie sessão como administrador para publicar uma receita.',
+
+  // ---------- Shared ----------
+  'common.signIn': 'Entrar',
+  'common.signOut': 'Sair',
+  'common.username': 'Nome de utilizador',
+  'common.password': 'Palavra-passe',
+  'common.cancel': 'Cancelar',
+  'common.save': 'Guardar alterações',
+  'common.saving': 'A guardar…',
+  'common.edit': 'Editar',
+  'common.view': 'Ver',
+  'common.loading': 'A carregar…',
+  'common.optional': 'opcional',
+  'common.required': 'Obrigatório',
+  'common.admin': 'Administração',
+
+  // ---------- Login ----------
+  'login.eyebrow': 'Área de administração',
+  'login.title': 'Entre para gerir as receitas',
+  'login.subtitle': 'Apenas o administrador da família pode editar o livro de receitas.',
+  'login.submit': 'Entrar',
+  'login.error': 'Nome de utilizador ou palavra-passe incorretos.',
+  'login.back': 'Voltar ao livro de receitas',
+  'login.devNotice': 'As ferramentas de administração correm no servidor Node local (npm run dev ou npm start após o build).',
+
+  // ---------- Admin dashboard ----------
+  'admin.eyebrow': 'Área de administração',
+  'admin.title': 'Gerir receitas',
+  'admin.subtitle': 'Atualize tudo o que já está no livro — uma vez em inglês, uma vez em português.',
+  'admin.signedInAs': 'Sessão iniciada como',
+  'admin.signedOut': 'A sua sessão terminou. Inicie sessão novamente.',
+  'admin.addNew': 'Adicionar uma receita',
+  'admin.listTitle': 'Receitas no livro',
+  'admin.listEmpty': 'Ainda não existem receitas.',
+  'admin.loading': 'A carregar receitas…',
+  'admin.loadError': 'Não foi possível carregar as receitas. Tente recarregar a página.',
+  'admin.devNotice':
+    'As ferramentas de administração precisam do servidor Node local. Execute npm run dev, ou npm start após o build.',
+  'admin.editTitle': 'A editar receita',
+  'admin.english': 'Versão em inglês',
+  'admin.portuguese': 'Versão em português',
+  'admin.story': 'História da família (inglês)',
+  'admin.storyPlaceholder': 'As memórias por trás deste prato…',
+  'admin.storyPt': 'História da família (português)',
+  'admin.storyPtPlaceholder': 'As memórias por trás deste prato…',
+  'admin.titlePt': 'Nome em português',
+  'admin.titlePtPlaceholder': 'ex.: Arroz de Bacalhau à Portuguesa',
+  'admin.descriptionPt': 'Descrição em português',
+  'admin.ingredientsPt': 'Ingredientes em português',
+  'admin.stepsPt': 'Passos em português',
+  'admin.featured': 'Receita em destaque',
+  'admin.saved': 'Receita guardada.',
+  'admin.rebuildHint': 'Receita guardada. Execute npm run build para atualizar as páginas publicadas.',
+  'admin.saveError': 'Não foi possível guardar esta receita.',
+  'admin.saveErrorSession': 'A sua sessão terminou. Inicie sessão novamente.',
+  'admin.noSelection': 'Escolha uma receita da lista para começar a editar.',
+  'admin.times': 'Tempos e doses',
+  'admin.basics': 'Detalhes da receita',
+  'admin.translations': 'Traduções',
+  'admin.storySection': 'História da família',
+  'admin.viewPublished': 'Ver página publicada',
+  'admin.badge.bilingual': 'Bilingue',
+  'admin.missingPt': 'Falta tradução em português',
+
+  'category.Mains': 'Pratos principais',
+  'category.Desserts': 'Sobremesas',
+  'category.Baking': 'Padaria e bolos',
+  'category.Sides': 'Acompanhamentos',
+  'family.Grandma': 'Avó',
+  'family.Mom': 'Mãe',
+  'family.Family': 'Família',
+};
+
+const dictionaries: Record<Lang, Record<string, string>> = { en, pt };
+
+/** Translate a key, falling back to English and finally to the key itself. */
+export function translate(lang: Lang, key: string): string {
+  return dictionaries[lang]?.[key] ?? en[key as UIKey] ?? key;
+}
+
+/** Spreadable attributes that keep an input's placeholder in sync with the language. */
+export function placeholderAttrs(key: string) {
+  return {
+    placeholder: translate('en', key),
+    'data-ph-en': translate('en', key),
+    'data-ph-pt': translate('pt', key),
+  };
+}
+
+/** Spreadable attributes that keep aria-labels in sync with the language. */
+export function ariaAttrs(key: string) {
+  return {
+    'aria-label': translate('en', key),
+    'data-aria-en': translate('en', key),
+    'data-aria-pt': translate('pt', key),
+  };
+}
+
+export const categoryLabels: Record<string, Record<Lang, string>> = {
+  Mains: { en: translate('en', 'category.Mains'), pt: translate('pt', 'category.Mains') },
+  Desserts: { en: translate('en', 'category.Desserts'), pt: translate('pt', 'category.Desserts') },
+  Baking: { en: translate('en', 'category.Baking'), pt: translate('pt', 'category.Baking') },
+  Sides: { en: translate('en', 'category.Sides'), pt: translate('pt', 'category.Sides') },
+};
+
+export const familyLabels: Record<string, Record<Lang, string>> = {
+  Grandma: { en: translate('en', 'family.Grandma'), pt: translate('pt', 'family.Grandma') },
+  Mom: { en: translate('en', 'family.Mom'), pt: translate('pt', 'family.Mom') },
+  Family: { en: translate('en', 'family.Family'), pt: translate('pt', 'family.Family') },
+};
+
+export function categoryLabel(value: string, lang: Lang): string {
+  return categoryLabels[value]?.[lang] ?? value;
+}
+
+export function familyLabel(value: string, lang: Lang): string {
+  return familyLabels[value]?.[lang] ?? value;
+}

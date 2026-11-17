@@ -1,0 +1,385 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '@/layouts/Layout.astro';
+import RecipeCard from '@/components/RecipeCard.astro';
+import T from '@/components/T.astro';
+import { placeholderAttrs, translate } from '@/i18n/ui';
+import { bilingualRecipe, recipeSearchText } from '@/lib/recipes';
+
+export interface Props {
+  tab?: 'all' | 'popular' | 'mom' | 'grandma';
+}
+
+const { tab = 'all' } = Astro.props;
+
+const recipes = await getCollection('recipes');
+
+const url = new URL(Astro.request.url);
+const q = (url.searchParams.get('q') ?? '').trim();
+
+const tabMeta: Record<
+  string,
+  {
+    eyebrowKey: string;
+    titleKey: string;
+    subtitleKey: string;
+    sectionKey: string;
+    sectionEyebrowKey: string;
+  }
+> = {
+  all: {
+    eyebrowKey: 'collection.all.eyebrow',
+    titleKey: 'collection.all.title',
+    subtitleKey: 'collection.all.subtitle',
+    sectionKey: 'collection.all.section',
+    sectionEyebrowKey: 'collection.all.sectionEyebrow',
+  },
+  popular: {
+    eyebrowKey: 'collection.popular.eyebrow',
+    titleKey: 'collection.popular.title',
+    subtitleKey: 'collection.popular.subtitle',
+    sectionKey: 'collection.popular.section',
+    sectionEyebrowKey: 'collection.popular.sectionEyebrow',
+  },
+  mom: {
+    eyebrowKey: 'collection.mom.eyebrow',
+    titleKey: 'collection.mom.title',
+    subtitleKey: 'collection.mom.subtitle',
+    sectionKey: 'collection.mom.section',
+    sectionEyebrowKey: 'collection.mom.sectionEyebrow',
+  },
+  grandma: {
+    eyebrowKey: 'collection.grandma.eyebrow',
+    titleKey: 'collection.grandma.title',
+    subtitleKey: 'collection.grandma.subtitle',
+    sectionKey: 'collection.grandma.section',
+    sectionEyebrowKey: 'collection.grandma.sectionEyebrow',
+  },
+};
+
+const meta = tabMeta[tab] ?? tabMeta.all;
+
+let filteredRecipes = recipes;
+
+if (tab === 'popular') {
+  filteredRecipes = recipes.filter((recipe) => recipe.data.featured);
+} else if (tab === 'mom' || tab === 'grandma') {
+  const family = tab === 'mom' ? 'Mom' : 'Grandma';
+  filteredRecipes = recipes.filter((recipe) => recipe.data.family === family);
+}
+
+if (q) {
+  const needle = q.toLowerCase();
+  filteredRecipes = filteredRecipes.filter((recipe) => recipeSearchText(recipe).includes(needle));
+}
+
+const featured = recipes.find((recipe) => recipe.data.featured) ?? recipes[0];
+const featuredText = featured ? bilingualRecipe(featured) : null;
+const categories = [...new Set(recipes.map((recipe) => recipe.data.category))].sort();
+const families = [...new Set(recipes.map((recipe) => recipe.data.family))].sort();
+---
+
+<Layout
+  title={translate('en', meta.titleKey)}
+  titlePt={translate('pt', meta.titleKey)}
+  description={translate('en', meta.subtitleKey)}
+  descriptionPt={translate('pt', meta.subtitleKey)}
+>
+
+  <section class="relative overflow-hidden bg-page-glow">
+    <div class="container-max pb-12 pt-12 md:pb-16 md:pt-16">
+      {tab === 'all' && (
+        <div class="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+          <div class="animate-fade-up">
+            <p class="eyebrow"><T k="collection.all.eyebrow" /></p>
+            <h1 class="mt-4">
+              <span data-lang="en">
+                {translate('en', 'collection.all.titlePrefix')}
+                <span class="font-normal italic text-terracotta-dark">
+                  {translate('en', 'collection.all.titleAccent')}
+                </span>
+              </span>
+              <span data-lang="pt">
+                {translate('pt', 'collection.all.titlePrefix')}
+                <span class="font-normal italic text-terracotta-dark">
+                  {translate('pt', 'collection.all.titleAccent')}
+                </span>
+              </span>
+            </h1>
+            <p class="mt-5 max-w-xl text-base text-ink-light sm:text-lg">
+              <T k="collection.all.subtitle" />
+            </p>
+
+            <div class="mt-8 flex flex-wrap items-center gap-3">
+              <a href="#recipes" class="btn">
+                <T k="collection.browse" />
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"></path>
+                </svg>
+              </a>
+              <a href="/create" class="btn-outline"><T k="collection.share" /></a>
+            </div>
+
+            <dl class="mt-10 grid max-w-md grid-cols-3 gap-4 border-t border-ink/10 pt-6">
+              <div>
+                <dt class="text-[11px] font-semibold uppercase tracking-widest text-ink-lighter">
+                  <T k="collection.stats.recipes" />
+                </dt>
+                <dd class="font-serif text-2xl font-semibold text-ink">{recipes.length}</dd>
+              </div>
+              <div>
+                <dt class="text-[11px] font-semibold uppercase tracking-widest text-ink-lighter">
+                  <T k="collection.stats.kitchens" />
+                </dt>
+                <dd class="font-serif text-2xl font-semibold text-ink">{families.length}</dd>
+              </div>
+              <div>
+                <dt class="text-[11px] font-semibold uppercase tracking-widest text-ink-lighter">
+                  <T k="collection.stats.categories" />
+                </dt>
+                <dd class="font-serif text-2xl font-semibold text-ink">{categories.length}</dd>
+              </div>
+            </dl>
+          </div>
+
+          {featured && featuredText && (
+            <a
+              href={`/recipes/${featured.slug}/`}
+              class="group relative block animate-fade-in overflow-hidden rounded-4xl border border-white/60 bg-oatmeal shadow-lift"
+            >
+              <img
+                src={featured.data.image}
+                alt={featuredText.en.title}
+                class="h-[22rem] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04] sm:h-[26rem] lg:h-[30rem]"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/25 to-transparent"></div>
+              <div class="absolute inset-x-0 bottom-0 p-6 text-cream sm:p-8">
+                <span class="badge border-white/25 bg-white/15 text-cream">
+                  <T k="collection.featured" />
+                </span>
+                <h2 class="mt-3 font-serif text-2xl font-semibold text-cream sm:text-3xl">
+                  <span data-lang="en">{featuredText.en.title}</span>
+                  <span data-lang="pt">{featuredText.pt.title}</span>
+                </h2>
+                <p class="mt-1.5 line-clamp-2 max-w-sm text-sm text-cream/80">
+                  <span data-lang="en">{featuredText.en.description}</span>
+                  <span data-lang="pt">{featuredText.pt.description}</span>
+                </p>
+                <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-cream">
+                  <T k="collection.view" />
+                  <svg class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"></path>
+                  </svg>
+                </span>
+              </div>
+            </a>
+          )}
+        </div>
+      )}
+
+      {tab !== 'all' && (
+        <div class="mx-auto max-w-2xl animate-fade-up text-center">
+          <p class="eyebrow"><T k={meta.eyebrowKey} /></p>
+          <h1 class="mt-3"><T k={meta.titleKey} /></h1>
+          <p class="mx-auto mt-4 max-w-xl text-base text-ink-light sm:text-lg">
+            <T k={meta.subtitleKey} />
+          </p>
+          <a href="/" class="btn-outline btn-sm mt-7 inline-flex"><T k="collection.back" /></a>
+        </div>
+      )}
+    </div>
+  </section>
+
+
+  <section id="filters" class="container-max pt-8 md:pt-10">
+    <div class="rounded-3xl border border-oatmeal bg-white/80 p-5 shadow-soft backdrop-blur sm:p-6">
+      <div class="relative">
+        <label for="search" class="sr-only">{translate('en', 'collection.search')}</label>
+        <input
+          id="search"
+          type="search"
+          data-search-input
+          value={q}
+          {...placeholderAttrs('collection.search.placeholder')}
+          autocomplete="off"
+          class="input input-pill md:max-w-md"
+        />
+        <svg
+          class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-lighter"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </div>
+
+      <div class="mt-6 grid gap-5 border-t border-oatmeal/80 pt-5 sm:grid-cols-2">
+        <div>
+          <p class="label"><T k="collection.category" /></p>
+          <div class="flex flex-wrap gap-2" id="category-filters">
+            <button type="button" data-filter="category" data-value="All" class="chip chip-active">
+              <T k="collection.all" />
+            </button>
+            {categories.map((category) => (
+              <button type="button" data-filter="category" data-value={category} class="chip">
+                <T k={`category.${category}`} />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p class="label"><T k="collection.family" /></p>
+          <div class="flex flex-wrap gap-2" id="family-filters">
+            <button type="button" data-filter="family" data-value="All" class="chip chip-active">
+              <T k="collection.everyone" />
+            </button>
+            {families.map((family) => (
+              <button type="button" data-filter="family" data-value={family} class="chip">
+                <T k={`family.${family}`} />
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="recipes" class="container-max pt-12">
+    <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <p class="eyebrow"><T k={meta.sectionEyebrowKey} /></p>
+        <h2 class="section-title mt-1"><T k={meta.sectionKey} /></h2>
+      </div>
+      <p class="text-sm text-ink-lighter">
+        <span id="results-count" class="font-semibold text-ink">{filteredRecipes.length}</span>
+        {filteredRecipes.length === 1 ? (
+          <T k="collection.results.one" />
+        ) : (
+          <T k="collection.results.many" />
+        )}
+      </p>
+    </div>
+
+    <div id="recipe-grid" class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+      {filteredRecipes.map((recipe) => <RecipeCard recipe={recipe} />)}
+    </div>
+
+    <div
+      id="empty-state"
+      class:list={[
+        'rounded-3xl border border-dashed border-oatmeal-dark bg-white/60 px-6 py-16 text-center',
+        filteredRecipes.length > 0 && 'hidden',
+      ]}
+    >
+      <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-oatmeal text-2xl" aria-hidden="true">
+        🍳
+      </span>
+      <h3 class="mt-5"><T k="collection.empty.title" /></h3>
+      <p class="mx-auto mt-2 max-w-sm text-sm text-ink-light">
+        <T k="collection.empty.body" />
+      </p>
+      <button type="button" data-reset class="btn btn-sm mt-6"><T k="collection.empty.reset" /></button>
+    </div>
+  </section>
+
+
+  <script is:inline>
+    (function () {
+      const grid = document.getElementById('recipe-grid');
+      if (!grid) return;
+
+      const cards = Array.from(grid.querySelectorAll('[data-recipe-card]'));
+      const searchInputs = Array.from(document.querySelectorAll('[data-search-input]'));
+      const filterButtons = Array.from(document.querySelectorAll('[data-filter]'));
+      const countEl = document.getElementById('results-count');
+      const emptyEl = document.getElementById('empty-state');
+      const resetButtons = Array.from(document.querySelectorAll('[data-reset]'));
+
+      const initialQuery = new URLSearchParams(window.location.search).get('q') || '';
+      const state = {
+        search: initialQuery.trim().toLowerCase(),
+        category: 'All',
+        family: 'All',
+      };
+
+      function matches(card) {
+        const category = card.dataset.category;
+        const family = card.dataset.family;
+        const text = (card.dataset.searchText || '').toLowerCase();
+
+        if (state.category !== 'All' && category !== state.category) return false;
+        if (state.family !== 'All' && family !== state.family) return false;
+        if (state.search && !text.includes(state.search)) return false;
+        return true;
+      }
+
+      function render() {
+        let visible = 0;
+
+        cards.forEach(function (card) {
+          const show = matches(card);
+          card.classList.toggle('hidden', !show);
+          if (show) visible += 1;
+        });
+
+        if (countEl) countEl.textContent = String(visible);
+        if (emptyEl) emptyEl.classList.toggle('hidden', visible > 0);
+      }
+
+      function setSearch(value) {
+        state.search = value.trim().toLowerCase();
+        searchInputs.forEach(function (input) {
+          if (input.value !== value) input.value = value;
+        });
+        render();
+      }
+
+      searchInputs.forEach(function (input) {
+        input.addEventListener('input', function (event) {
+          setSearch(event.target.value);
+        });
+      });
+
+      filterButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          filterButtons
+            .filter(function (other) {
+              return other.dataset.filter === button.dataset.filter;
+            })
+            .forEach(function (other) {
+              other.classList.remove('chip-active');
+            });
+
+          button.classList.add('chip-active');
+          state[button.dataset.filter] = button.dataset.value;
+          render();
+        });
+      });
+
+      resetButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          state.category = 'All';
+          state.family = 'All';
+
+          filterButtons.forEach(function (other) {
+            const isAll = other.dataset.value === 'All';
+            other.classList.toggle('chip-active', isAll);
+          });
+
+          setSearch('');
+        });
+      });
+
+      if (initialQuery) setSearch(initialQuery);
+      else render();
+    })();
+  </script>
+</Layout>
+

@@ -1,0 +1,634 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import T from '@/components/T.astro';
+import { categoryLabels, familyLabels, translate } from '@/i18n/ui';
+
+const isDev = import.meta.env.DEV;
+
+const copy = {
+  loading: { en: translate('en', 'admin.loading'), pt: translate('pt', 'admin.loading') },
+  loadError: { en: translate('en', 'admin.loadError'), pt: translate('pt', 'admin.loadError') },
+  devNotice: { en: translate('en', 'admin.devNotice'), pt: translate('pt', 'admin.devNotice') },
+  empty: { en: translate('en', 'admin.listEmpty'), pt: translate('pt', 'admin.listEmpty') },
+  edit: { en: translate('en', 'common.edit'), pt: translate('pt', 'common.edit') },
+  view: { en: translate('en', 'common.view'), pt: translate('pt', 'common.view') },
+  saving: { en: translate('en', 'common.saving'), pt: translate('pt', 'common.saving') },
+  saved: { en: translate('en', 'admin.saved'), pt: translate('pt', 'admin.saved') },
+  rebuildHint: {
+    en: translate('en', 'admin.rebuildHint'),
+    pt: translate('pt', 'admin.rebuildHint'),
+  },
+  saveError: { en: translate('en', 'admin.saveError'), pt: translate('pt', 'admin.saveError') },
+  saveErrorSession: {
+    en: translate('en', 'admin.saveErrorSession'),
+    pt: translate('pt', 'admin.saveErrorSession'),
+  },
+  missingPt: { en: translate('en', 'admin.missingPt'), pt: translate('pt', 'admin.missingPt') },
+  bilingual: { en: translate('en', 'admin.badge.bilingual'), pt: translate('pt', 'admin.badge.bilingual') },
+  noSelection: { en: translate('en', 'admin.noSelection'), pt: translate('pt', 'admin.noSelection') },
+  categories: categoryLabels,
+  families: familyLabels,
+};
+---
+
+<Layout
+  title={translate('en', 'admin.title')}
+  titlePt={translate('pt', 'admin.title')}
+  description={translate('en', 'admin.subtitle')}
+  descriptionPt={translate('pt', 'admin.subtitle')}
+>
+  <section class="border-b border-oatmeal/60 bg-page-glow">
+    <div class="container-max py-10 md:py-14">
+      <div class="flex flex-wrap items-end justify-between gap-5">
+        <div>
+          <p class="eyebrow"><T k="admin.eyebrow" /></p>
+          <h1 class="mt-3"><T k="admin.title" /></h1>
+          <p class="mt-3 max-w-2xl text-sm text-ink-light"><T k="admin.subtitle" /></p>
+          <p class="mt-2 text-xs text-ink-lighter">
+            <T k="admin.signedInAs" />
+            <span id="admin-user" class="font-semibold text-ink">admin</span>
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <a href="/create" class="btn btn-sm"><T k="admin.addNew" /></a>
+          <form method="post" action="/api/auth/logout">
+            <button type="submit" class="btn-outline btn-sm"><T k="common.signOut" /></button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-max py-10">
+    <p id="admin-status" class="status-note status-info"><T k="admin.loading" /></p>
+    <p id="admin-message" class="status-note mt-4 hidden" role="status"></p>
+
+    <div class="mt-6 grid gap-6 lg:grid-cols-[21rem_minmax(0,1fr)] lg:items-start">
+      <aside class="rounded-3xl border border-oatmeal bg-white p-4 shadow-soft lg:sticky lg:top-28">
+        <h2 class="px-1 font-serif text-lg font-semibold tracking-tight">
+          <T k="admin.listTitle" />
+        </h2>
+        <div id="recipe-list" class="mt-3 space-y-2"></div>
+        <p id="list-empty" class="hidden px-1 py-4 text-sm text-ink-light">
+          <T k="admin.listEmpty" />
+        </p>
+      </aside>
+
+      <div>
+        <p
+          id="editor-placeholder"
+          class="rounded-3xl border border-dashed border-oatmeal-dark bg-white/60 px-6 py-16 text-center text-sm text-ink-light"
+        >
+          <T k="admin.noSelection" />
+        </p>
+
+        <form id="edit-form" class="hidden space-y-6" method="post" action="/api/recipes/update">
+          <input type="hidden" name="slug" id="edit-slug" value="" />
+
+          <div class="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-oatmeal bg-white p-5 shadow-soft">
+            <div class="min-w-0">
+              <p class="eyebrow"><T k="admin.editTitle" /></p>
+              <h2 id="editor-title" class="mt-1 truncate text-xl font-semibold">—</h2>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <a id="editor-view" href="/" class="btn-outline btn-sm" target="_blank" rel="noopener">
+                <T k="admin.viewPublished" />
+              </a>
+              <button type="button" id="cancel-edit" class="btn-ghost btn-sm">
+                <T k="common.cancel" />
+              </button>
+              <button type="submit" class="btn btn-sm" id="save-button">
+                <T k="common.save" />
+              </button>
+            </div>
+          </div>
+
+          <section class="rounded-3xl border border-oatmeal bg-white p-6 shadow-soft md:p-8">
+            <h3 class="font-serif text-lg font-semibold tracking-tight"><T k="admin.basics" /></h3>
+
+            <div class="mt-5 grid gap-5 sm:grid-cols-2">
+              <div class="sm:col-span-2">
+                <label for="edit-title" class="label"><T k="create.titleLabel" /></label>
+                <input type="text" id="edit-title" name="title" class="input" required />
+              </div>
+
+              <div class="sm:col-span-2">
+                <label for="edit-description" class="label"><T k="create.descriptionLabel" /></label>
+                <textarea id="edit-description" name="description" rows="3" class="input resize-y" required></textarea>
+              </div>
+
+              <div>
+                <label for="edit-author" class="label"><T k="create.author" /></label>
+                <input type="text" id="edit-author" name="author" class="input" required />
+              </div>
+
+              <div>
+                <label for="edit-family" class="label"><T k="create.family" /></label>
+                <select id="edit-family" name="family" class="input" required>
+                  <option value="Grandma" data-option-en="Grandma" data-option-pt="Avó">Grandma</option>
+                  <option value="Mom" data-option-en="Mom" data-option-pt="Mãe">Mom</option>
+                  <option value="Family" data-option-en="Family" data-option-pt="Família">Family</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="edit-category" class="label"><T k="create.category" /></label>
+                <select id="edit-category" name="category" class="input" required>
+                  <option value="Mains" data-option-en="Mains" data-option-pt="Pratos principais">Mains</option>
+                  <option value="Desserts" data-option-en="Desserts" data-option-pt="Sobremesas">Desserts</option>
+                  <option value="Baking" data-option-en="Baking" data-option-pt="Padaria e bolos">Baking</option>
+                  <option value="Sides" data-option-en="Sides" data-option-pt="Acompanhamentos">Sides</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="edit-servings" class="label"><T k="create.servings" /></label>
+                <input type="text" id="edit-servings" name="servings" class="input" required />
+              </div>
+
+              <div class="sm:col-span-2">
+                <label for="edit-image" class="label"><T k="create.image" /></label>
+                <input type="text" id="edit-image" name="image" class="input" required />
+              </div>
+
+              <div class="sm:col-span-2">
+                <label for="edit-video" class="label"><T k="create.video" /></label>
+                <input type="url" id="edit-video" name="video" class="input" />
+              </div>
+
+              <div class="sm:col-span-2">
+                <label class="flex items-center gap-3 text-sm font-medium text-ink">
+                  <input
+                    type="checkbox"
+                    id="edit-featured"
+                    name="featured"
+                    class="h-5 w-5 rounded border-oatmeal-dark accent-terracotta"
+                  />
+                  <T k="admin.featured" />
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <section class="rounded-3xl border border-oatmeal bg-white p-6 shadow-soft md:p-8">
+            <h3 class="font-serif text-lg font-semibold tracking-tight"><T k="admin.times" /></h3>
+
+            <div class="mt-5 grid gap-5 sm:grid-cols-3">
+              <div>
+                <label for="edit-prepTime" class="label"><T k="create.prep" /></label>
+                <input type="text" id="edit-prepTime" name="prepTime" class="input" required />
+              </div>
+              <div>
+                <label for="edit-cookTime" class="label"><T k="create.cook" /></label>
+                <input type="text" id="edit-cookTime" name="cookTime" class="input" required />
+              </div>
+              <div>
+                <label for="edit-totalTime" class="label"><T k="create.total" /></label>
+                <input type="text" id="edit-totalTime" name="totalTime" class="input" required />
+              </div>
+            </div>
+          </section>
+
+
+          <section class="rounded-3xl border border-oatmeal bg-white p-6 shadow-soft md:p-8">
+            <h3 class="font-serif text-lg font-semibold tracking-tight">
+              <T k="create.ingredientsSection" />
+            </h3>
+            <p class="mt-1 text-sm text-ink-light"><T k="create.ingredientsHelp" /></p>
+
+            <div class="mt-5 grid gap-5">
+              <div>
+                <label for="edit-ingredients" class="label"><T k="create.ingredients" /></label>
+                <textarea
+                  id="edit-ingredients"
+                  name="ingredients"
+                  rows="7"
+                  class="input resize-y font-mono text-[13px] leading-relaxed"
+                  required
+                ></textarea>
+              </div>
+              <div>
+                <label for="edit-steps" class="label"><T k="create.steps" /></label>
+                <textarea
+                  id="edit-steps"
+                  name="steps"
+                  rows="9"
+                  class="input resize-y font-mono text-[13px] leading-relaxed"
+                  required
+                ></textarea>
+              </div>
+            </div>
+          </section>
+
+          <section class="rounded-3xl border border-oatmeal bg-white p-6 shadow-soft md:p-8">
+            <h3 class="font-serif text-lg font-semibold tracking-tight"><T k="admin.portuguese" /></h3>
+            <p class="mt-1 text-sm text-ink-light"><T k="create.ingredientsHelp" /></p>
+
+            <div class="mt-5 grid gap-5">
+              <div>
+                <label for="edit-titlePt" class="label"><T k="admin.titlePt" /></label>
+                <input type="text" id="edit-titlePt" name="titlePt" class="input" />
+              </div>
+              <div>
+                <label for="edit-descriptionPt" class="label"><T k="admin.descriptionPt" /></label>
+                <textarea id="edit-descriptionPt" name="descriptionPt" rows="3" class="input resize-y"></textarea>
+              </div>
+              <div>
+                <label for="edit-ingredientsPt" class="label"><T k="admin.ingredientsPt" /></label>
+                <textarea
+                  id="edit-ingredientsPt"
+                  name="ingredientsPt"
+                  rows="7"
+                  class="input resize-y font-mono text-[13px] leading-relaxed"
+                ></textarea>
+              </div>
+              <div>
+                <label for="edit-stepsPt" class="label"><T k="admin.stepsPt" /></label>
+                <textarea
+                  id="edit-stepsPt"
+                  name="stepsPt"
+                  rows="9"
+                  class="input resize-y font-mono text-[13px] leading-relaxed"
+                ></textarea>
+              </div>
+            </div>
+          </section>
+
+          <section class="rounded-3xl border border-oatmeal bg-white p-6 shadow-soft md:p-8">
+            <h3 class="font-serif text-lg font-semibold tracking-tight"><T k="admin.storySection" /></h3>
+
+            <div class="mt-5 grid gap-5">
+              <div>
+                <label for="edit-story" class="label"><T k="admin.story" /></label>
+                <textarea id="edit-story" name="story" rows="4" class="input resize-y"></textarea>
+              </div>
+              <div>
+                <label for="edit-storyPt" class="label"><T k="admin.storyPt" /></label>
+                <textarea id="edit-storyPt" name="storyPt" rows="4" class="input resize-y"></textarea>
+              </div>
+            </div>
+          </section>
+
+          <div class="flex flex-wrap items-center justify-between gap-3 border-t border-oatmeal pt-6">
+            <p class="text-xs text-ink-lighter">
+              <T k="create.savedIn" />
+              <code class="rounded bg-white px-1.5 py-0.5">src/content/recipes</code>.
+            </p>
+            <div class="flex items-center gap-2">
+              <button type="button" id="cancel-edit-bottom" class="btn-outline btn-sm">
+                <T k="common.cancel" />
+              </button>
+              <button type="submit" class="btn btn-sm"><T k="common.save" /></button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+
+  <script define:vars={{ copy, isDev }}>
+    (function () {
+      const statusEl = document.getElementById('admin-status');
+      const messageEl = document.getElementById('admin-message');
+      const listEl = document.getElementById('recipe-list');
+      const emptyEl = document.getElementById('list-empty');
+      const form = document.getElementById('edit-form');
+      const placeholder = document.getElementById('editor-placeholder');
+      const editorTitle = document.getElementById('editor-title');
+      const editorView = document.getElementById('editor-view');
+      const userEl = document.getElementById('admin-user');
+
+      let recipes = [];
+      let activeSlug = null;
+
+      function lang() {
+        return document.documentElement.getAttribute('data-lang') === 'pt' ? 'pt' : 'en';
+      }
+
+      function text(key) {
+        const entry = copy[key];
+        if (!entry) return '';
+        return entry[lang()] || entry.en;
+      }
+
+      function setStatus(key, tone) {
+        if (!statusEl) return;
+        statusEl.classList.remove('hidden', 'status-info', 'status-error', 'status-success');
+        if (!key) {
+          statusEl.classList.add('hidden');
+          return;
+        }
+        statusEl.textContent = text(key);
+        statusEl.classList.add('status-' + (tone || 'info'));
+      }
+
+      function setMessage(key, tone) {
+        if (!messageEl) return;
+        messageEl.classList.remove('hidden', 'status-info', 'status-error', 'status-success');
+        if (!key) {
+          messageEl.classList.add('hidden');
+          return;
+        }
+        messageEl.textContent = text(key);
+        messageEl.classList.add('status-' + (tone || 'info'));
+      }
+
+      function field(name) {
+        return form && form.elements ? form.elements.namedItem(name) : null;
+      }
+
+      function setValue(name, value) {
+        const element = field(name);
+        if (element && 'value' in element) element.value = value == null ? '' : String(value);
+      }
+
+      function recipeTitle(recipe) {
+        return lang() === 'pt' && recipe.titlePt ? recipe.titlePt : recipe.title;
+      }
+
+      function label(map, value) {
+        const entry = map ? map[value] : null;
+        return entry ? entry[lang()] || entry.en : value;
+      }
+
+      function hasPortuguese(recipe) {
+        return Boolean(
+          recipe.titlePt &&
+            recipe.descriptionPt &&
+            Array.isArray(recipe.ingredientsPt) &&
+            recipe.ingredientsPt.length > 0 &&
+            Array.isArray(recipe.stepsPt) &&
+            recipe.stepsPt.length > 0
+        );
+      }
+
+      function redirectToLogin() {
+        window.location.replace('/admin/login/?next=/admin');
+      }
+
+
+      function renderList() {
+        if (!listEl) return;
+        listEl.innerHTML = '';
+
+        if (!recipes.length) {
+          if (emptyEl) emptyEl.classList.remove('hidden');
+          return;
+        }
+        if (emptyEl) emptyEl.classList.add('hidden');
+
+        recipes.forEach(function (recipe) {
+          const row = document.createElement('div');
+          row.className = 'admin-row' + (recipe.slug === activeSlug ? ' admin-row-active' : '');
+
+          const info = document.createElement('div');
+          info.className = 'flex min-w-0 items-center gap-3';
+
+          const img = document.createElement('img');
+          img.className = 'admin-thumb';
+          img.src = recipe.image || '';
+          img.alt = '';
+          img.loading = 'lazy';
+
+          const meta = document.createElement('div');
+          meta.className = 'min-w-0';
+
+          const title = document.createElement('p');
+          title.className = 'truncate text-sm font-semibold text-ink';
+          title.textContent = recipeTitle(recipe);
+
+          const sub = document.createElement('p');
+          sub.className = 'mt-0.5 truncate text-xs text-ink-lighter';
+          sub.textContent =
+            label(copy.categories, recipe.category) + ' · ' + label(copy.families, recipe.family);
+
+          const badge = document.createElement('p');
+          const translated = hasPortuguese(recipe);
+          badge.className =
+            'mt-1 text-[10px] font-semibold uppercase tracking-wider ' +
+            (translated ? 'text-sage-dark' : 'text-terracotta-dark');
+          badge.textContent = text(translated ? 'bilingual' : 'missingPt');
+
+          meta.append(title, sub, badge);
+          info.append(img, meta);
+
+          const actions = document.createElement('div');
+          actions.className = 'flex shrink-0 items-center gap-2';
+
+          const view = document.createElement('a');
+          view.className = 'btn-ghost btn-sm';
+          view.href = '/recipes/' + recipe.slug + '/';
+          view.target = '_blank';
+          view.rel = 'noopener';
+          view.textContent = text('view');
+
+          const edit = document.createElement('button');
+          edit.type = 'button';
+          edit.className = 'btn btn-sm';
+          edit.setAttribute('data-edit', recipe.slug);
+          edit.textContent = text('edit');
+
+          actions.append(view, edit);
+          row.append(info, actions);
+          listEl.append(row);
+        });
+      }
+
+      function fillEditor(recipe) {
+        if (!form) return;
+
+        activeSlug = recipe.slug;
+        setValue('slug', recipe.slug);
+        setValue('title', recipe.title);
+        setValue('description', recipe.description);
+        setValue('author', recipe.author);
+        setValue('family', recipe.family);
+        setValue('category', recipe.category);
+        setValue('servings', recipe.servings);
+        setValue('image', recipe.image);
+        setValue('video', recipe.video || '');
+        setValue('prepTime', recipe.prepTime);
+        setValue('cookTime', recipe.cookTime);
+        setValue('totalTime', recipe.totalTime);
+        setValue('ingredients', (recipe.ingredients || []).join('\n'));
+        setValue('steps', (recipe.steps || []).join('\n'));
+        setValue('titlePt', recipe.titlePt || '');
+        setValue('descriptionPt', recipe.descriptionPt || '');
+        setValue('ingredientsPt', (recipe.ingredientsPt || []).join('\n'));
+        setValue('stepsPt', (recipe.stepsPt || []).join('\n'));
+        setValue('story', recipe.story || '');
+        setValue('storyPt', recipe.storyPt || '');
+
+        const featured = field('featured');
+        if (featured && 'checked' in featured) featured.checked = Boolean(recipe.featured);
+
+        if (editorTitle) editorTitle.textContent = recipeTitle(recipe);
+        if (editorView) editorView.href = '/recipes/' + recipe.slug + '/';
+
+        form.classList.remove('hidden');
+        if (placeholder) placeholder.classList.add('hidden');
+        setMessage(null);
+        renderList();
+
+        if (typeof form.scrollIntoView === 'function') {
+          form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+
+      function closeEditor() {
+        activeSlug = null;
+        if (form) form.classList.add('hidden');
+        if (placeholder) placeholder.classList.remove('hidden');
+        setMessage(null);
+        renderList();
+      }
+
+
+      function loadRecipes() {
+        setStatus('loading', 'info');
+        return window
+          .fetch('/api/recipes', {
+            headers: { Accept: 'application/json' },
+            credentials: 'same-origin',
+          })
+          .then(function (response) {
+            if (response.status === 401) {
+              redirectToLogin();
+              return null;
+            }
+            if (!response.ok) throw new Error('request failed');
+            return response.json();
+          })
+          .then(function (data) {
+            if (!data) return;
+            recipes = Array.isArray(data.recipes) ? data.recipes : [];
+            setStatus(null);
+            renderList();
+          })
+          .catch(function () {
+            setStatus('loadError', 'error');
+          });
+      }
+
+      if (listEl) {
+        listEl.addEventListener('click', function (event) {
+          const button = event.target.closest('[data-edit]');
+          if (!button) return;
+          const slug = button.getAttribute('data-edit');
+          const recipe = recipes.find(function (item) {
+            return item.slug === slug;
+          });
+          if (recipe) fillEditor(recipe);
+        });
+      }
+
+      ['cancel-edit', 'cancel-edit-bottom'].forEach(function (id) {
+        const button = document.getElementById(id);
+        if (button) button.addEventListener('click', closeEditor);
+      });
+
+      if (form) {
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+
+          const saveButton = document.getElementById('save-button');
+          const saveHtml = saveButton ? saveButton.innerHTML : '';
+          if (saveButton) {
+            saveButton.disabled = true;
+            saveButton.textContent = text('saving');
+          }
+          setMessage(null);
+
+          window
+            .fetch('/api/recipes/update', {
+              method: 'POST',
+              body: new FormData(form),
+              headers: { Accept: 'application/json' },
+              credentials: 'same-origin',
+            })
+            .then(function (response) {
+              return response
+                .json()
+                .catch(function () {
+                  return {};
+                })
+                .then(function (result) {
+                  return { ok: response.ok, status: response.status, result: result };
+                });
+            })
+            .then(function (outcome) {
+              if (outcome.ok) {
+                setMessage(isDev ? 'saved' : 'rebuildHint', 'success');
+
+                const titleField = field('title');
+                const titlePtField = field('titlePt');
+                if (editorTitle) {
+                  const ptTitle = titlePtField && 'value' in titlePtField ? titlePtField.value : '';
+                  const enTitle = titleField && 'value' in titleField ? titleField.value : '';
+                  editorTitle.textContent = lang() === 'pt' && ptTitle ? ptTitle : enTitle;
+                }
+
+                loadRecipes();
+                return;
+              }
+
+              if (outcome.status === 401) {
+                setMessage('saveErrorSession', 'error');
+                window.setTimeout(redirectToLogin, 1500);
+                return;
+              }
+
+              setMessage('saveError', 'error');
+            })
+            .catch(function () {
+              setMessage('saveError', 'error');
+            })
+            .then(function () {
+              if (saveButton) {
+                saveButton.disabled = false;
+                saveButton.innerHTML = saveHtml;
+              }
+            });
+        });
+      }
+
+      document.addEventListener('languagechange', function () {
+        renderList();
+        if (activeSlug) {
+          const recipe = recipes.find(function (item) {
+            return item.slug === activeSlug;
+          });
+          if (recipe && editorTitle) editorTitle.textContent = recipeTitle(recipe);
+        }
+      });
+
+      if (typeof window.fetch !== 'function') {
+        setStatus('devNotice', 'info');
+        return;
+      }
+
+      window
+        .fetch('/api/auth/session', {
+          headers: { Accept: 'application/json' },
+          credentials: 'same-origin',
+        })
+        .then(function (response) {
+          return response.ok ? response.json() : null;
+        })
+        .then(function (data) {
+          if (!data || !data.authenticated) {
+            redirectToLogin();
+            return;
+          }
+          if (userEl && data.username) userEl.textContent = data.username;
+          loadRecipes();
+        })
+        .catch(function () {
+          setStatus('devNotice', 'info');
+        });
+    })();
+  </script>
+</Layout>
+

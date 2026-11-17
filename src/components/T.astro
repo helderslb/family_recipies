@@ -1,0 +1,22 @@
+---
+/**
+ * Renders a translated UI string twice — once per language.
+ * CSS in global.css hides whichever language is not active on <html>,
+ * so switching languages never needs a page reload.
+ */
+import { translate } from '@/i18n/ui';
+
+export interface Props {
+  /** Dictionary key, e.g. "nav.all". */
+  k: string;
+  class?: string;
+  /** Optional wrapper tag (defaults to a span). */
+  as?: string;
+}
+
+const { k, class: className = '', as: Tag = 'span' } = Astro.props;
+const en = translate('en', k);
+const pt = translate('pt', k);
+---
+
+<Tag data-lang="en" class={className}>{en}</Tag><Tag data-lang="pt" class={className}>{pt}</Tag>

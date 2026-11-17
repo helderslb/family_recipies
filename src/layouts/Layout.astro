@@ -1,0 +1,498 @@
+---
+import '@/styles/global.css';
+import T from '@/components/T.astro';
+import { ariaAttrs, placeholderAttrs, translate } from '@/i18n/ui';
+
+export interface Props {
+  /** English page title (the <title> tag and document.title). */
+  title?: string;
+  /** Portuguese page title. Falls back to the English one. */
+  titlePt?: string;
+  description?: string;
+  descriptionPt?: string;
+}
+
+const { title, titlePt = title, description, descriptionPt = description } = Astro.props;
+
+const descriptionEn =
+  description ?? 'Warm, simple family recipes passed down through generations.';
+const descriptionPtValue =
+  descriptionPt ?? 'Receitas de família simples e acolhedoras, passadas de geração em geração.';
+
+const url = Astro.url;
+const pathname = url.pathname.replace(/\/+$/, '') || '/';
+const currentTabByPath: Record<string, string> = {
+  '/popular': 'popular',
+  '/mom': 'mom',
+  '/grandma': 'grandma',
+  '/restaurants': 'restaurants',
+};
+const currentTab = currentTabByPath[pathname] ?? 'all';
+const query = url.searchParams.get('q') ?? '';
+
+const navItems = [
+  { key: 'all', k: 'nav.all', emoji: '🍲', href: '/' },
+  { key: 'popular', k: 'nav.popular', emoji: '🔥', href: '/popular' },
+  { key: 'mom', k: 'nav.mom', emoji: '👩‍🍳', href: '/mom' },
+  { key: 'grandma', k: 'nav.grandma', emoji: '👵', href: '/grandma' },
+  { key: 'restaurants', k: 'nav.restaurants', emoji: '📍', href: '/restaurants' },
+];
+
+const titleEn = title ? `${title} • Family Recipes` : 'Family Recipes';
+const titlePtValue = titlePt ? `${titlePt} • Receitas da Família` : 'Receitas da Família';
+---
+
+<!DOCTYPE html>
+<html
+  lang="en"
+  data-lang="en"
+  data-title-en={titleEn}
+  data-title-pt={titlePtValue}
+  data-description-en={descriptionEn}
+  data-description-pt={descriptionPtValue}
+>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={descriptionEn} />
+    <meta name="theme-color" content="#FAF7F1" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Family Recipes" />
+    <meta property="og:title" content={titleEn} />
+    <meta property="og:description" content={descriptionEn} />
+    <title>{titleEn}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
+      rel="stylesheet"
+    />
+    <script is:inline>
+      (function () {
+        var KEY = 'family-recipes-language';
+        var LANGS = ['en', 'pt'];
+
+        function stored() {
+          try {
+            var value = window.localStorage.getItem(KEY);
+            return LANGS.indexOf(value) >= 0 ? value : null;
+          } catch (error) {
+            return null;
+          }
+        }
+
+        function preferred() {
+          var saved = stored();
+          if (saved) return saved;
+
+          var language =
+            (window.navigator && (window.navigator.language || window.navigator.userLanguage)) || '';
+          return String(language).toLowerCase().indexOf('pt') === 0 ? 'pt' : 'en';
+        }
+
+        function current() {
+          var value = document.documentElement.getAttribute('data-lang');
+          return LANGS.indexOf(value) >= 0 ? value : 'en';
+        }
+
+        function apply(lang, persist) {
+          if (LANGS.indexOf(lang) < 0) lang = 'en';
+
+          var root = document.documentElement;
+          root.setAttribute('lang', lang);
+          root.setAttribute('data-lang', lang);
+
+          var titleText = root.getAttribute('data-title-' + lang);
+          if (titleText) document.title = titleText;
+
+          var description = root.getAttribute('data-description-' + lang);
+          var meta = document.querySelector('meta[name="description"]');
+          if (description && meta) meta.setAttribute('content', description);
+
+          document.querySelectorAll('[data-set-lang]').forEach(function (button) {
+            var active = button.getAttribute('data-set-lang') === lang;
+            button.classList.toggle('lang-option-active', active);
+            button.setAttribute('aria-pressed', active ? 'true' : 'false');
+          });
+
+          document.querySelectorAll('[data-ph-en]').forEach(function (field) {
+            var text = field.getAttribute('data-ph-' + lang);
+            if (text) field.setAttribute('placeholder', text);
+          });
+
+          document.querySelectorAll('[data-aria-en]').forEach(function (element) {
+            var text = element.getAttribute('data-aria-' + lang);
+            if (text) element.setAttribute('aria-label', text);
+          });
+
+          document.querySelectorAll('[data-option-en]').forEach(function (option) {
+            var optionText = option.getAttribute('data-option-' + lang);
+            if (optionText) option.textContent = optionText;
+          });
+
+          if (persist) {
+            try {
+              window.localStorage.setItem(KEY, lang);
+            } catch (error) {
+              /* private mode — the switch still works for this page view */
+            }
+          }
+
+          document.dispatchEvent(new CustomEvent('languagechange', { detail: { lang: lang } }));
+        }
+
+        apply(preferred(), false);
+
+        document.addEventListener('DOMContentLoaded', function () {
+          apply(current(), false);
+        });
+
+        document.addEventListener('click', function (event) {
+          var target = event.target;
+          if (!target || !target.closest) return;
+          var button = target.closest('[data-set-lang]');
+          if (!button) return;
+          apply(button.getAttribute('data-set-lang'), true);
+        });
+      })();
+    </script>
+  </head>
+
+  <body id="top" class="flex min-h-screen flex-col bg-cream text-ink">
+    <a href="#main" class="skip-link no-print"><T k="skip.link" /></a>
+
+    <header class="no-print sticky top-0 z-50">
+      <div class="border-b border-oatmeal/70 bg-cream/85 backdrop-blur-xl">
+        <div class="container-max">
+          <div class="flex h-16 items-center justify-between gap-4 md:h-20">
+            <!-- Brand -->
+            <a
+              href="/"
+              class="group flex items-center gap-3 transition-opacity hover:opacity-90"
+              {...ariaAttrs('nav.home')}
+            >
+              <span
+                class="flex h-10 w-10 items-center justify-center rounded-2xl bg-terracotta text-white shadow-soft transition-transform duration-300 group-hover:-rotate-6"
+                aria-hidden="true"
+              >
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M12 21s-7.5-4.6-9.4-9A5.6 5.6 0 0 1 12 5.6 5.6 5.6 0 0 1 21.4 12c-1.9 4.4-9.4 9-9.4 9Z"></path>
+                </svg>
+              </span>
+              <span class="font-serif text-xl font-semibold tracking-tight text-ink">
+                <span data-lang="en">Family<span class="text-terracotta">Recipes</span></span>
+                <span data-lang="pt">Receitas da <span class="text-terracotta">Família</span></span>
+              </span>
+            </a>
+
+            <!-- Desktop tabs -->
+            <nav
+              class="hidden items-center gap-1 rounded-full border border-oatmeal/80 bg-white/70 p-1 shadow-soft md:flex"
+              {...ariaAttrs('nav.collections')}
+            >
+              {navItems.map((item) => (
+                <a
+                  href={item.href}
+                  class:list={['nav-tab', currentTab === item.key && 'nav-tab-active']}
+                  aria-current={currentTab === item.key ? 'page' : undefined}
+                >
+                  <span aria-hidden="true" class="text-[13px] leading-none">{item.emoji}</span>
+                  <T k={item.k} />
+                </a>
+              ))}
+            </nav>
+
+            <div class="flex items-center gap-2">
+              <form action="/" method="get" role="search" class="relative hidden lg:block">
+                <label for="header-search" class="sr-only">{translate('en', 'nav.search')}</label>
+                <input
+                  type="search"
+                  id="header-search"
+                  name="q"
+                  value={query}
+                  data-search-input
+                  {...placeholderAttrs('nav.search.placeholder')}
+                  autocomplete="off"
+                  class="input input-pill w-56 xl:w-64"
+                />
+                <svg
+                  class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-lighter"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+              </form>
+
+              <div class="lang-switch hidden sm:inline-flex" role="group" {...ariaAttrs('nav.language')}>
+                <button
+                  type="button"
+                  class="lang-option lang-option-active"
+                  data-set-lang="en"
+                  aria-pressed="true"
+                >
+                  EN
+                </button>
+                <button type="button" class="lang-option" data-set-lang="pt" aria-pressed="false">
+                  PT
+                </button>
+              </div>
+
+              <a href="/create" class="btn btn-sm hidden sm:inline-flex">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m-7-7h14"></path>
+                </svg>
+                <T k="nav.add" />
+              </a>
+
+              <button
+                type="button"
+                id="menu-toggle"
+                class="btn-ghost h-10 w-10 rounded-full border border-oatmeal bg-white/70 p-0 md:hidden"
+                aria-expanded="false"
+                aria-controls="mobile-panel"
+                data-close-en="Close menu"
+                data-close-pt="Fechar menu"
+                {...ariaAttrs('nav.openMenu')}
+              >
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile tabs -->
+      <div class="border-b border-oatmeal/70 bg-cream/90 backdrop-blur-xl md:hidden">
+        <div class="container-max">
+          <div class="no-scrollbar -mx-1 flex gap-1 overflow-x-auto py-2">
+            {navItems.map((item) => (
+              <a
+                href={item.href}
+                class:list={['nav-tab', currentTab === item.key && 'nav-tab-active']}
+                aria-current={currentTab === item.key ? 'page' : undefined}
+              >
+                <span aria-hidden="true" class="text-[13px] leading-none">{item.emoji}</span>
+                <T k={item.k} />
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile search panel -->
+      <div
+        id="mobile-panel"
+        class="hidden border-b border-oatmeal bg-white/95 backdrop-blur-xl md:hidden"
+      >
+        <div class="container-max space-y-4 py-4">
+          <form action="/" method="get" role="search" class="relative">
+            <label for="mobile-search" class="sr-only">{translate('en', 'nav.search')}</label>
+            <input
+              type="search"
+              id="mobile-search"
+              name="q"
+              value={query}
+              data-search-input
+              {...placeholderAttrs('nav.search.placeholderMobile')}
+              autocomplete="off"
+              class="input input-pill"
+            />
+            <svg
+              class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-lighter"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </form>
+
+          <div class="flex items-center justify-between gap-3">
+            <span class="text-[11px] font-semibold uppercase tracking-wider text-ink-lighter">
+              {translate('en', 'nav.language')}
+            </span>
+            <div class="lang-switch" role="group" {...ariaAttrs('nav.language')}>
+              <button
+                type="button"
+                class="lang-option lang-option-active"
+                data-set-lang="en"
+                aria-pressed="true"
+              >
+                English
+              </button>
+              <button type="button" class="lang-option" data-set-lang="pt" aria-pressed="false">
+                Português
+              </button>
+            </div>
+          </div>
+
+          <a href="/create" class="btn w-full">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m-7-7h14"></path>
+            </svg>
+            <T k="nav.addLong" />
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="flex-grow">
+      <slot />
+    </main>
+
+
+    <footer class="no-print mt-24 border-t border-oatmeal bg-gradient-to-b from-oatmeal/40 to-oatmeal/70">
+      <div class="container-max py-14">
+        <div class="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr] md:gap-8">
+          <div class="max-w-sm">
+            <div class="flex items-center gap-3">
+              <span
+                class="flex h-9 w-9 items-center justify-center rounded-xl bg-terracotta text-white shadow-soft"
+                aria-hidden="true"
+              >
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M12 21s-7.5-4.6-9.4-9A5.6 5.6 0 0 1 12 5.6 5.6 5.6 0 0 1 21.4 12c-1.9 4.4-9.4 9-9.4 9Z"></path>
+                </svg>
+              </span>
+              <span class="font-serif text-lg font-semibold tracking-tight">
+                <span data-lang="en">Family<span class="text-terracotta">Recipes</span></span>
+                <span data-lang="pt">Receitas da <span class="text-terracotta">Família</span></span>
+              </span>
+            </div>
+            <p class="mt-4 font-serif text-lg italic leading-snug text-ink-light">
+              <T k="footer.tagline" />
+            </p>
+          </div>
+
+          <nav {...ariaAttrs('footer.explore')}>
+            <h2 class="text-[11px] font-semibold uppercase tracking-widest text-ink-lighter">
+              <T k="footer.explore" />
+            </h2>
+            <ul class="mt-4 space-y-2.5 text-sm">
+              <li>
+                <a href="/" class="text-ink-light transition-colors hover:text-terracotta-dark">
+                  <T k="nav.all" />
+                </a>
+              </li>
+              <li>
+                <a href="/popular" class="text-ink-light transition-colors hover:text-terracotta-dark">
+                  <T k="footer.popular" />
+                </a>
+              </li>
+              <li>
+                <a href="/mom" class="text-ink-light transition-colors hover:text-terracotta-dark">
+                  <T k="nav.mom" />
+                </a>
+              </li>
+              <li>
+                <a href="/grandma" class="text-ink-light transition-colors hover:text-terracotta-dark">
+                  <T k="nav.grandma" />
+                </a>
+              </li>
+              <li>
+                <a href="/restaurants" class="text-ink-light transition-colors hover:text-terracotta-dark">
+                  <T k="footer.restaurants" />
+                </a>
+              </li>
+            </ul>
+          </nav>
+
+          <nav {...ariaAttrs('footer.contribute')}>
+            <h2 class="text-[11px] font-semibold uppercase tracking-widest text-ink-lighter">
+              <T k="footer.contribute" />
+            </h2>
+            <ul class="mt-4 space-y-2.5 text-sm">
+              <li>
+                <a href="/create" class="text-ink-light transition-colors hover:text-terracotta-dark">
+                  <T k="footer.add" />
+                </a>
+              </li>
+              <li>
+                <a href="#top" class="text-ink-light transition-colors hover:text-terracotta-dark">
+                  <T k="footer.backToTop" />
+                </a>
+              </li>
+              <li>
+                <a href="/admin/login/" class="text-ink-light transition-colors hover:text-terracotta-dark">
+                  <T k="common.admin" />
+                </a>
+              </li>
+            </ul>
+            <a href="/create" class="btn btn-sm mt-5 inline-flex"><T k="footer.share" /></a>
+          </nav>
+        </div>
+
+        <div
+          class="mt-12 flex flex-col items-center justify-between gap-2 border-t border-ink/10 pt-6 text-xs text-ink-lighter sm:flex-row"
+        >
+          <p>© {new Date().getFullYear()} <T k="footer.rights" /></p>
+          <p><T k="footer.built" /></p>
+        </div>
+      </div>
+    </footer>
+
+
+    <script is:inline>
+      (function () {
+        var toggle = document.getElementById('menu-toggle');
+        var panel = document.getElementById('mobile-panel');
+        if (!toggle || !panel) return;
+
+        function currentLang() {
+          return document.documentElement.getAttribute('data-lang') === 'pt' ? 'pt' : 'en';
+        }
+
+        function labels() {
+          var code = currentLang();
+          return {
+            open: toggle.getAttribute('data-aria-' + code) || 'Open menu',
+            close: toggle.getAttribute('data-close-' + code) || 'Close menu',
+          };
+        }
+
+        function setOpen(open) {
+          panel.classList.toggle('hidden', !open);
+          toggle.setAttribute('aria-expanded', String(open));
+          toggle.setAttribute('aria-label', open ? labels().close : labels().open);
+        }
+
+        toggle.addEventListener('click', function () {
+          setOpen(panel.classList.contains('hidden'));
+        });
+
+        document.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape') setOpen(false);
+        });
+
+        panel.querySelectorAll('a').forEach(function (link) {
+          link.addEventListener('click', function () {
+            setOpen(false);
+          });
+        });
+
+        document.addEventListener('languagechange', function () {
+          var expanded = toggle.getAttribute('aria-expanded') === 'true';
+          toggle.setAttribute('aria-label', expanded ? labels().close : labels().open);
+        });
+      })();
+    </script>
+  </body>
+</html>
+

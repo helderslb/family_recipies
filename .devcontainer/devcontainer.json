@@ -1,0 +1,20 @@
+{
+  "name": "Family Recipes",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "forwardPorts": [4321],
+  "portsAttributes": {
+    "4321": {
+      "label": "Astro (dev & preview)",
+      "onAutoForward": "notify"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "saoudrizwan.claude-dev",
+        "astro-build.astro-vscode"
+      ]
+    }
+  }
+}
