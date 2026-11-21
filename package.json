@@ -2,13 +2,11 @@
   "name": "family_recipies",
   "version": "1.0.0",
   "main": "index.js",
-  "engines": {
-    "node": "20.x"
-  },
   "scripts": {
     "dev": "astro dev",
     "prebuild": "node scripts/recipes-sync.mjs pull",
     "build": "astro build",
+    "postbuild": "node scripts/fix-runtime.mjs",
     "preview": "astro preview",
     "start": "node ./dist/server/entry.mjs",
     "check": "node scripts/check-build.mjs",
