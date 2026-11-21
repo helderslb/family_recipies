@@ -136,6 +136,9 @@ export const en = {
   'restaurants.notes': 'Notes',
   'restaurants.saved': 'Saved',
   'restaurants.visit': 'Visit website',
+  'restaurants.filterAll': 'All',
+  'restaurants.filterTripadvisor': 'Tripadvisor',
+  'restaurants.filterOthers': 'Others',
 
   // ---------- Add recipe form ----------
   'create.eyebrow': 'Contribute',
@@ -386,6 +389,9 @@ export const pt: Record<UIKey, string> = {
   'restaurants.notes': 'Notas',
   'restaurants.saved': 'Guardado',
   'restaurants.visit': 'Visitar site',
+  'restaurants.filterAll': 'Todos',
+  'restaurants.filterTripadvisor': 'Tripadvisor',
+  'restaurants.filterOthers': 'Outros',
 
   // ---------- Add recipe form ----------
   'create.eyebrow': 'Contribuir',

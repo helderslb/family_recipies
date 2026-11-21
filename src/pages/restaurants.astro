@@ -4,8 +4,13 @@ import T from '@/components/T.astro';
 import { translate } from '@/i18n/ui';
 import { restaurants } from '@/lib/restaurants';
 
+const withSource = restaurants.map((r) => ({
+  ...r,
+  source: /tripadvisor/i.test(String(r.link || '')) ? 'tripadvisor' : 'other',
+}));
+
 const mapData = {
-  places: restaurants,
+  places: withSource,
   labels: {
     rating: { en: translate('en', 'restaurants.rating'), pt: translate('pt', 'restaurants.rating') },
     quality: { en: translate('en', 'restaurants.quality'), pt: translate('pt', 'restaurants.quality') },
@@ -43,6 +48,17 @@ const mapDataJson = JSON.stringify(mapData).replace(/</g, '\\u003c');
       <h2 class="section-title"><T k="restaurants.mapTitle" /></h2>
       <p class="text-sm text-ink-lighter"><T k="restaurants.mapHint" /></p>
     </div>
+    <div class="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label="Filter restaurants">
+      <button type="button" data-restaurant-filter="all" class="chip chip-active" aria-pressed="true">
+        <T k="restaurants.filterAll" />
+      </button>
+      <button type="button" data-restaurant-filter="tripadvisor" class="chip" aria-pressed="false">
+        <T k="restaurants.filterTripadvisor" />
+      </button>
+      <button type="button" data-restaurant-filter="other" class="chip" aria-pressed="false">
+        <T k="restaurants.filterOthers" />
+      </button>
+    </div>
     <div id="map" class="map-canvas mt-5"></div>
   </section>
 
@@ -52,8 +68,8 @@ const mapDataJson = JSON.stringify(mapData).replace(/</g, '\\u003c');
       <h2 class="section-title mt-1"><T k="restaurants.listTitle" /></h2>
 
       <div class="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-        {restaurants.map((r) => (
-          <article class="card flex flex-col p-6">
+        {withSource.map((r) => (
+          <article class="card flex flex-col p-6" data-restaurant-source={r.source}>
             <div class="flex items-start justify-between gap-3">
               <h3 class="text-lg font-semibold leading-snug">{r.name}</h3>
               {r.rating && (
@@ -216,6 +232,16 @@ const mapDataJson = JSON.stringify(mapData).replace(/</g, '\\u003c');
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(map);
 
+      // One layer group per source so the filter can toggle them independently.
+      var layers = {
+        tripadvisor: L.layerGroup().addTo(map),
+        other: L.layerGroup().addTo(map),
+      };
+
+      function sourceOf(p) {
+        return p.source === 'tripadvisor' ? 'tripadvisor' : 'other';
+      }
+
       Object.keys(groups).forEach(function (key) {
         var list = groups[key];
         list.forEach(function (p, i) {
@@ -227,7 +253,7 @@ const mapDataJson = JSON.stringify(mapData).replace(/</g, '\\u003c');
             var radius = 0.003;
             latLng = [p.lat + radius * Math.sin(angle), p.lng + radius * Math.cos(angle)];
           }
-          L.marker(latLng, { icon: pin }).addTo(map).bindPopup(popupHtml(p));
+          L.marker(latLng, { icon: pin }).addTo(layers[sourceOf(p)]).bindPopup(popupHtml(p));
         });
       });
 
@@ -237,6 +263,35 @@ const mapDataJson = JSON.stringify(mapData).replace(/</g, '\\u003c');
       window.setTimeout(function () {
         map.invalidateSize();
       }, 200);
+
+      // ----- Filter: All / Tripadvisor / Others -----
+      var filterButtons = Array.prototype.slice.call(document.querySelectorAll('[data-restaurant-filter]'));
+      var listCards = Array.prototype.slice.call(document.querySelectorAll('[data-restaurant-source]'));
+
+      function applyFilter(filter) {
+        Object.keys(layers).forEach(function (key) {
+          var visible = filter === 'all' || filter === key;
+          if (visible && !map.hasLayer(layers[key])) layers[key].addTo(map);
+          if (!visible && map.hasLayer(layers[key])) map.removeLayer(layers[key]);
+        });
+
+        listCards.forEach(function (card) {
+          var show = filter === 'all' || card.getAttribute('data-restaurant-source') === filter;
+          card.style.display = show ? '' : 'none';
+        });
+
+        filterButtons.forEach(function (button) {
+          var active = button.getAttribute('data-restaurant-filter') === filter;
+          button.classList.toggle('chip-active', active);
+          button.setAttribute('aria-pressed', String(active));
+        });
+      }
+
+      filterButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          applyFilter(button.getAttribute('data-restaurant-filter'));
+        });
+      });
     })();
   </script>
 </Layout>
