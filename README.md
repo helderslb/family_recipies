@@ -93,14 +93,19 @@ public/images/    photography used by the recipes
 
 ## Deployment
 
-`output: 'hybrid'` with `@astrojs/node` keeps every page prerendered while the
-`/api/*` endpoints run on demand:
+The site deploys on Vercel. Recipes live in Turso; a `prebuild` step
+(`scripts/recipes-sync.mjs pull`) regenerates `src/content/recipes/*.md` from
+Turso before Astro prerenders the pages.
 
-```bash
-npm run build
-HOST=0.0.0.0 PORT=4321 npm start
-```
+Required environment variables (`.env` locally, Vercel Environment Variables in
+production):
 
-Because recipe edits are written to `src/content/recipes/*.md`, the server needs
-a writable checkout of the repository and enough permissions to rewrite those
-files. Rebuild the site after content changes so the public pages pick them up.
+| Variable | Purpose |
+| --- | --- |
+| `ADMIN_USERNAME` / `ADMIN_PASSWORD` | Admin login |
+| `ADMIN_SESSION_SECRET` | Signs the session cookie — generate a long random string |
+| `TURSO_DATABASE_URL` / `TURSO_AUTH_TOKEN` | Recipe storage |
+| `VERCEL_DEPLOY_HOOK` | Optional — redeploys after a recipe edit |
+
+Recipe edits are written to Turso. Set `VERCEL_DEPLOY_HOOK` so a save triggers a
+Vercel redeploy and the prerendered pages pick up the change (~a minute).
