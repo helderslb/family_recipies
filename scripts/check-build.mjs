@@ -10,10 +10,9 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
-const DIST_ROOT = join(process.cwd(), 'dist');
-// With the Node adapter (hybrid output) the prerendered pages live in
-// dist/client; a pure static build writes them straight to dist.
-const DIST = existsSync(join(DIST_ROOT, 'client')) ? join(DIST_ROOT, 'client') : DIST_ROOT;
+const DIST_ROOT = process.cwd();
+// With @astrojs/vercel, prerendered pages and assets land in .vercel/output/static.
+const DIST = join(DIST_ROOT, '.vercel', 'output', 'static');
 const errors = [];
 const warnings = [];
 
@@ -39,7 +38,7 @@ function walk(dir, out = []) {
 }
 
 if (!existsSync(DIST)) {
-  console.error('dist/ not found — run `npm run build` first.');
+  console.error('.vercel/output/static not found — run `npm run build` first.');
   process.exit(1);
 }
 
@@ -149,9 +148,9 @@ const REQUIRED_CSS = [
   '.nav-tab-active{',
   '.container-max{',
   '.eyebrow{',
-  'rgb(250 247 241', // cream
-  'rgb(196 105 74', // terracotta
-  'rgb(36 31 26', // ink
+  'rgb(221 235 248', // cream → clear light-blue canvas
+  'rgb(45 123 184', // terracotta → coastal blue accent
+  'rgb(14 27 44', // ink → deep navy
   'Playfair Display',
 ];
 

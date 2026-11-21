@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "astro dev",
+    "prebuild": "node scripts/recipes-sync.mjs pull",
     "build": "astro build",
     "preview": "astro preview",
     "start": "node ./dist/server/entry.mjs",
@@ -22,6 +23,10 @@
   },
   "dependencies": {
     "@astrojs/node": "^8.3.4",
-    "@astrojs/tailwind": "^5.1.5"
+    "@astrojs/tailwind": "^5.1.5",
+    "@astrojs/vercel": "^7.8.2",
+    "@libsql/client": "^0.18.0",
+    "dotenv": "^18.0.10",
+    "gray-matter": "^4.0.3"
   }
 }

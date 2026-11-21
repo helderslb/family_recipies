@@ -1,12 +1,13 @@
 import type { APIRoute } from 'astro';
-import fs from 'node:fs';
 import { isAuthenticated, jsonResponse } from '@/lib/auth';
+import { triggerDeploy } from '@/lib/deploy';
 import {
   buildRecipeMarkdown,
-  recipeFilePath,
   recipeFromFormData,
   validateRecipe,
+  writeRecipeFile,
 } from '@/lib/recipe-file';
+import { recipeExists, upsertRecipe } from '@/lib/recipe-store';
 
 export const prerender = false;
 
@@ -18,9 +19,8 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const form = await request.formData();
     const slug = String(form.get('slug') ?? '').trim();
-    const filePath = recipeFilePath(slug);
 
-    if (!filePath) {
+    if (!(await recipeExists(slug))) {
       return jsonResponse({ error: 'Recipe not found' }, 404);
     }
 
@@ -31,7 +31,14 @@ export const POST: APIRoute = async ({ request }) => {
       return jsonResponse({ error: problem }, 400);
     }
 
-    fs.writeFileSync(filePath, buildRecipeMarkdown(input), 'utf8');
+    try {
+      writeRecipeFile(slug, input);
+    } catch {
+      /* read-only filesystem on Vercel — ignore */
+    }
+
+    await upsertRecipe(slug, buildRecipeMarkdown(input));
+    await triggerDeploy();
 
     return jsonResponse({ success: true, slug });
   } catch (error) {

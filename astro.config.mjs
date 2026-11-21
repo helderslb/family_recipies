@@ -1,6 +1,7 @@
+import 'dotenv/config';
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
-import node from '@astrojs/node';
+import vercel from '@astrojs/vercel/serverless';
 import path from 'path';
 
 export default defineConfig({
@@ -8,7 +9,7 @@ export default defineConfig({
   // Hybrid: every page is still prerendered to static HTML, but the /api/*
   // endpoints (login, recipe create/update) run on demand on the Node server.
   output: 'hybrid',
-  adapter: node({ mode: 'standalone' }),
+  adapter: vercel(),
   // Astro 4 ignores `devOptions` — dev *and* preview read `server`.
   // Binding 0.0.0.0 is required for the devcontainer port-forward
   // (it connects to 127.0.0.1 inside the container; the default `localhost`

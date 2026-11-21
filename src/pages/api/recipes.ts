@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
-import { getCollection } from 'astro:content';
 import { isAuthenticated, jsonResponse } from '@/lib/auth';
+import { listRecipes } from '@/lib/recipe-store';
 
 export const prerender = false;
 
@@ -9,15 +9,6 @@ export const GET: APIRoute = async ({ request }) => {
     return jsonResponse({ error: 'Unauthorized' }, 401);
   }
 
-  const recipes = await getCollection('recipes');
-
-  const items = recipes
-    .map((recipe) => ({
-      slug: recipe.slug,
-      story: (recipe.body ?? '').trim(),
-      ...recipe.data,
-    }))
-    .sort((a, b) => a.title.localeCompare(b.title));
-
+  const items = await listRecipes();
   return jsonResponse({ recipes: items });
 };

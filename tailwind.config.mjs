@@ -3,35 +3,44 @@ export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   theme: {
     extend: {
+      // Coastal blue theme (remapped from the original warm terracotta palette).
+      // The original key names are kept so every existing component class still
+      // resolves — only the values changed. Semantic mapping for reference:
+      //   cream      → clear light-blue canvas
+      //   oatmeal    → cool gray-blue borders / muted surfaces
+      //   terracotta → primary accent (coastal blue)
+      //   sage       → secondary accent (soft sky blue)
+      //   warm       → muted steel navy (tertiary)
+      //   ink        → deep navy text
       colors: {
         cream: {
-          DEFAULT: '#FAF7F1',
-          light: '#FDFBF7',
-          dark: '#F4EEE3',
+          DEFAULT: '#DDEBF8',
+          light: '#F5FAFE',
+          dark: '#CBE0F1',
         },
         oatmeal: {
-          DEFAULT: '#F0E7D9',
-          light: '#F7F1E7',
-          dark: '#E3D5C1',
+          DEFAULT: '#E7EDF3',
+          light: '#F4F7FA',
+          dark: '#D5DFE8',
         },
         terracotta: {
-          DEFAULT: '#C4694A',
-          light: '#E8CFC2',
-          dark: '#9C4C31',
+          DEFAULT: '#2D7BB8',
+          light: '#D8E8F6',
+          dark: '#1B4E78',
         },
         sage: {
-          DEFAULT: '#8FA37C',
-          light: '#DEE6D5',
-          dark: '#5C7049',
+          DEFAULT: '#6E9DC4',
+          light: '#E2EEF7',
+          dark: '#35628A',
         },
         warm: {
-          DEFAULT: '#8C5E3E',
-          light: '#C8A78C',
+          DEFAULT: '#5B7186',
+          light: '#C7D5E0',
         },
         ink: {
-          DEFAULT: '#241F1A',
-          light: '#544B41',
-          lighter: '#8A7F74',
+          DEFAULT: '#0E1B2C',
+          light: '#33465C',
+          lighter: '#6B7A8C',
         },
       },
       fontFamily: {
@@ -39,8 +48,8 @@ export default {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
       },
       boxShadow: {
-        soft: '0 1px 2px rgba(36, 31, 26, 0.04), 0 12px 28px -16px rgba(36, 31, 26, 0.16)',
-        lift: '0 2px 4px rgba(36, 31, 26, 0.04), 0 28px 56px -24px rgba(36, 31, 26, 0.28)',
+        soft: '0 1px 2px rgba(14, 27, 44, 0.04), 0 12px 28px -16px rgba(14, 27, 44, 0.16)',
+        lift: '0 2px 4px rgba(14, 27, 44, 0.04), 0 28px 56px -24px rgba(14, 27, 44, 0.28)',
         inset: 'inset 0 1px 0 rgba(255, 255, 255, 0.6)',
       },
       borderRadius: {

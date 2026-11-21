@@ -11,10 +11,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { JSDOM, VirtualConsole } from 'jsdom';
 
-const DIST_ROOT = join(process.cwd(), 'dist');
-// With the Node adapter (hybrid output) the prerendered pages live in
-// dist/client; a pure static build writes them straight to dist.
-const DIST = existsSync(join(DIST_ROOT, 'client')) ? join(DIST_ROOT, 'client') : DIST_ROOT;
+const DIST_ROOT = process.cwd();
+// With @astrojs/vercel, prerendered pages and assets land in .vercel/output/static.
+const DIST = join(DIST_ROOT, '.vercel', 'output', 'static');
 let passed = 0;
 let failed = 0;
 const failures = [];

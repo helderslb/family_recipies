@@ -69,7 +69,7 @@
   }
 
   .skip-link:focus {
-    @apply not-sr-only fixed left-4 top-4 z-[100] rounded-full bg-ink px-4 py-2 text-sm font-semibold text-cream shadow-lift;
+    @apply not-sr-only fixed left-4 top-4 z-[100] rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white shadow-lift;
   }
 
   /* ---------- Buttons ---------- */
@@ -104,7 +104,7 @@
 
   /* ---------- Surfaces ---------- */
   .card {
-    @apply overflow-hidden rounded-3xl border border-oatmeal bg-white shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift;
+    @apply overflow-hidden rounded-2xl border border-oatmeal bg-white shadow-soft transition-shadow duration-300 hover:shadow-lift;
   }
 
   .badge {
@@ -121,7 +121,7 @@
   }
 
   .nav-tab-active {
-    @apply bg-ink text-cream shadow-soft hover:bg-ink hover:text-cream;
+    @apply bg-ink text-white shadow-soft hover:bg-ink hover:text-white;
   }
 
   /* ---------- Restaurant map ---------- */
@@ -130,8 +130,8 @@
     height: 360px;
     overflow: hidden;
     border-radius: 1.5rem;
-    border: 1px solid #f0e7d9;
-    box-shadow: 0 1px 2px rgba(36, 31, 26, 0.04), 0 12px 28px -16px rgba(36, 31, 26, 0.16);
+    border: 1px solid #e7edf3;
+    box-shadow: 0 1px 2px rgba(14, 27, 44, 0.04), 0 12px 28px -16px rgba(14, 27, 44, 0.16);
     z-index: 0;
   }
 
@@ -149,16 +149,16 @@
 
   .map-pin {
     display: block;
-    background: #c4694a;
+    background: #2d7bb8;
     border: 3px solid #fff;
     border-radius: 9999px;
-    box-shadow: 0 2px 8px rgba(36, 31, 26, 0.4);
+    box-shadow: 0 2px 8px rgba(14, 27, 44, 0.4);
     cursor: pointer;
     transition: background 0.15s ease, transform 0.15s ease;
   }
 
   .map-pin:hover {
-    background: #9c4c31;
+    background: #1b4e78;
     transform: scale(1.12);
   }
 
@@ -172,7 +172,7 @@
     font-size: 15px;
     font-weight: 700;
     line-height: 1.2;
-    color: #241f1a;
+    color: #0e1b2c;
   }
 
   .map-popup-meta {
@@ -181,14 +181,14 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #9c4c31;
+    color: #1b4e78;
   }
 
   .map-popup-desc {
     margin-top: 8px;
     font-size: 13px;
     line-height: 1.45;
-    color: #544b41;
+    color: #33465c;
   }
 
   .map-popup-row {
@@ -198,7 +198,7 @@
     gap: 10px;
     margin-top: 8px;
     padding-top: 8px;
-    border-top: 1px solid #f0e7d9;
+    border-top: 1px solid #e7edf3;
     font-size: 12px;
     line-height: 1.4;
   }
@@ -209,13 +209,13 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: #8a7f74;
+    color: #6b7a8c;
   }
 
   .map-popup-row dd {
     margin: 0;
     text-align: right;
-    color: #241f1a;
+    color: #0e1b2c;
   }
 
   .map-popup-link {
@@ -223,12 +223,12 @@
     margin-top: 12px;
     font-size: 12px;
     font-weight: 600;
-    color: #c4694a;
+    color: #2d7bb8;
     text-decoration: none;
   }
 
   .map-popup-link:hover {
-    color: #9c4c31;
+    color: #1b4e78;
     text-decoration: underline;
   }
 
@@ -242,7 +242,7 @@
   }
 
   .lang-option-active {
-    @apply bg-ink text-cream hover:text-cream;
+    @apply bg-ink text-white hover:text-white;
   }
 
   /* ---------- Admin ---------- */
@@ -280,7 +280,7 @@
   }
 
   .chip-active {
-    @apply border-transparent bg-ink text-cream shadow-soft hover:border-transparent hover:bg-ink hover:text-cream;
+    @apply border-transparent bg-ink text-white shadow-soft hover:border-transparent hover:bg-ink hover:text-white;
   }
 
   /* ---------- Typography helpers ---------- */
@@ -325,8 +325,8 @@
 
   .bg-page-glow {
     background-image:
-      radial-gradient(46rem 30rem at 85% -10%, rgba(196, 105, 74, 0.14), transparent 70%),
-      radial-gradient(38rem 26rem at 0% 10%, rgba(143, 163, 124, 0.18), transparent 70%);
+      radial-gradient(46rem 30rem at 85% -10%, rgba(45, 123, 184, 0.10), transparent 70%),
+      radial-gradient(38rem 26rem at 0% 10%, rgba(110, 157, 196, 0.12), transparent 70%);
   }
 }
 

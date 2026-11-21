@@ -25,8 +25,18 @@ export interface AdminSession {
   username: string;
 }
 
+/** Constant-time comparison so the password check leaks no timing information. */
+function constantTimeEqual(left: string, right: string): boolean {
+  const a = createHmac('sha256', sessionSecret()).update(left).digest();
+  const b = createHmac('sha256', sessionSecret()).update(right).digest();
+  return timingSafeEqual(a, b);
+}
+
 export function checkCredentials(username: string, password: string): boolean {
-  return username === adminUsername() && password === adminPassword();
+  // Evaluate both comparisons unconditionally to avoid short-circuit timing leaks.
+  const usernameOk = constantTimeEqual(username, adminUsername());
+  const passwordOk = constantTimeEqual(password, adminPassword());
+  return usernameOk && passwordOk;
 }
 
 export function createSessionToken(username: string): string {
@@ -95,18 +105,26 @@ export function isAuthenticated(request: Request): boolean {
 
 /** Set-Cookie value for a freshly signed-in admin. */
 export function sessionCookie(token: string): string {
-  return [
+  const flags = [
     `${SESSION_COOKIE}=${encodeURIComponent(token)}`,
     'Path=/',
     'HttpOnly',
     'SameSite=Lax',
     `Max-Age=${SESSION_MAX_AGE_SECONDS}`,
-  ].join('; ');
+  ];
+
+  // Only over HTTPS in production (Vercel sets NODE_ENV=production); dev runs on
+  // plain http://localhost, where a Secure cookie would be silently dropped.
+  if (process.env.NODE_ENV === 'production') flags.push('Secure');
+
+  return flags.join('; ');
 }
 
 /** Set-Cookie value that clears the session. */
 export function expiredSessionCookie(): string {
-  return `${SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`;
+  const flags = ['Path=/', 'HttpOnly', 'SameSite=Lax', 'Max-Age=0'];
+  if (process.env.NODE_ENV === 'production') flags.push('Secure');
+  return `${SESSION_COOKIE}=; ${flags.join('; ')}`;
 }
 
 export function jsonResponse(data: unknown, status = 200, headers: HeadersInit = {}) {
@@ -125,6 +143,9 @@ export function redirectResponse(location: string, cookies: string[] = []) {
 /** Only allow same-site paths as post-login redirect targets. */
 export function safeNextPath(value: string | null | undefined, fallback = '/admin'): string {
   if (!value) return fallback;
+  // Reject protocol-relative (//) and backslash (/\evil.com) redirects, plus
+  // control characters, which some browsers normalise into the same open redirect.
   if (!value.startsWith('/') || value.startsWith('//')) return fallback;
+  if (/[\\\u0000-\u001f]/.test(value)) return fallback;
   return value;
 }
