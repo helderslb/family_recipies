@@ -1,5 +1,5 @@
 ---
-title: Posta com batata à murro
+title: Posta com batata a murro
 description: TBC
 image: >-
   https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795366315/family-recipes/posta-com-batata-a-murro-1.jpg
@@ -10,7 +10,7 @@ prepTime: TBC
 cookTime: TBC
 totalTime: TBC
 servings: TBC
-titlePt: Posta com batata à murro
+titlePt: Posta com batata a murro
 descriptionPt: TBC
 ingredients:
   - TBC

@@ -1,5 +1,5 @@
 ---
-title: Leite Creme
+title: Leite-creme
 description: TBC
 image: >-
   https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795366307/family-recipes/leite-creme-1.jpg
@@ -10,7 +10,7 @@ prepTime: TBC
 cookTime: TBC
 totalTime: TBC
 servings: TBC
-titlePt: Leite Creme
+titlePt: Leite-creme
 descriptionPt: TBC
 ingredients:
   - TBC
