@@ -250,6 +250,10 @@ export const en = {
   'admin.viewPublished': 'View published page',
   'admin.badge.bilingual': 'Bilingual',
   'admin.missingPt': 'Missing Portuguese translation',
+  'admin.delete': 'Delete',
+  'admin.deleteConfirm': 'Delete this recipe? This cannot be undone.',
+  'admin.deleted': 'Recipe deleted.',
+  'admin.deleteError': 'Could not delete this recipe.',
 
   // ---------- Category / family labels ----------
   'category.Mains': 'Mains',
@@ -506,6 +510,10 @@ export const pt: Record<UIKey, string> = {
   'admin.viewPublished': 'Ver página publicada',
   'admin.badge.bilingual': 'Bilingue',
   'admin.missingPt': 'Falta tradução em português',
+  'admin.delete': 'Apagar',
+  'admin.deleteConfirm': 'Apagar esta receita? Isto não pode ser desfeito.',
+  'admin.deleted': 'Receita apagada.',
+  'admin.deleteError': 'Não foi possível apagar esta receita.',
 
   'category.Mains': 'Pratos principais',
   'category.Desserts': 'Sobremesas',

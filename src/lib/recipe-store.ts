@@ -66,3 +66,15 @@ export async function upsertRecipe(slug: string, markdown: string): Promise<void
     args: [slug, markdown, Date.now()],
   });
 }
+
+/** Delete a recipe. Returns true when a row was removed (false when no DB/row). */
+export async function deleteRecipe(slug: string): Promise<boolean> {
+  if (!SLUG_PATTERN.test(slug)) return false;
+
+  const db = getDb();
+  if (!db) return false;
+
+  await ensureSchema();
+  const result = await db.execute({ sql: 'DELETE FROM recipes WHERE slug = ?', args: [slug] });
+  return result.rowsAffected > 0;
+}

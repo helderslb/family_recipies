@@ -77,9 +77,9 @@ console.log('\nHomepage: search, filters and empty state');
 const home = await load('index.html');
 
 await test('renders every recipe from the collection', () => {
-  assert.equal(cards(home.document).length, 4);
-  assert.equal(visibleCards(home.document).length, 4);
-  assert.equal(count(home.document), '4');
+  assert.equal(cards(home.document).length, 36);
+  assert.equal(visibleCards(home.document).length, 36);
+  assert.equal(count(home.document), '36');
   assert.ok(isHidden(home.document.getElementById('empty-state')));
 });
 
@@ -92,7 +92,7 @@ await test('typing in the search filters cards live', () => {
 
 await test('search also matches ingredients and author', () => {
   type(home.window, home.document.getElementById('search'), 'bacalhau');
-  assert.equal(visibleCards(home.document).length, 1);
+  assert.equal(visibleCards(home.document).length, 5);
 
   type(home.window, home.document.getElementById('search'), 'grandma rose');
   assert.equal(visibleCards(home.document).length, 1);
@@ -106,7 +106,7 @@ await test('search inputs stay in sync', () => {
 
 await test('clearing the search restores all recipes', () => {
   type(home.window, home.document.getElementById('search'), '');
-  assert.equal(visibleCards(home.document).length, 4);
+  assert.equal(visibleCards(home.document).length, 36);
 });
 
 await test('family chips filter and highlight correctly', () => {
@@ -125,7 +125,7 @@ await test('combined filters show the empty state', () => {
 
 await test('"Clear filters" resets search and every chip', () => {
   click(home.window, home.document.querySelector('[data-reset]'));
-  assert.equal(visibleCards(home.document).length, 4);
+  assert.equal(visibleCards(home.document).length, 36);
   assert.equal(home.document.getElementById('search').value, '');
   assert.equal(home.document.querySelectorAll('.chip-active').length, 2);
   assert.ok(isHidden(home.document.getElementById('empty-state')));
@@ -157,7 +157,7 @@ console.log('\nHomepage: ?q= deep link');
 const deepLinked = await load('index.html', { url: 'http://localhost/?q=arroz' });
 
 await test('server-side query filters the page and pre-fills the inputs', () => {
-  assert.equal(visibleCards(deepLinked.document).length, 1);
+  assert.equal(visibleCards(deepLinked.document).length, 6);
   assert.equal(deepLinked.document.getElementById('search').value, 'arroz');
   assert.equal(deepLinked.document.getElementById('header-search').value, 'arroz');
 });

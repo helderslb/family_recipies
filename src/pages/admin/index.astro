@@ -24,6 +24,13 @@ const copy = {
     pt: translate('pt', 'admin.saveErrorSession'),
   },
   missingPt: { en: translate('en', 'admin.missingPt'), pt: translate('pt', 'admin.missingPt') },
+  delete: { en: translate('en', 'admin.delete'), pt: translate('pt', 'admin.delete') },
+  deleteConfirm: {
+    en: translate('en', 'admin.deleteConfirm'),
+    pt: translate('pt', 'admin.deleteConfirm'),
+  },
+  deleted: { en: translate('en', 'admin.deleted'), pt: translate('pt', 'admin.deleted') },
+  deleteError: { en: translate('en', 'admin.deleteError'), pt: translate('pt', 'admin.deleteError') },
   bilingual: { en: translate('en', 'admin.badge.bilingual'), pt: translate('pt', 'admin.badge.bilingual') },
   noSelection: { en: translate('en', 'admin.noSelection'), pt: translate('pt', 'admin.noSelection') },
   categories: categoryLabels,
@@ -433,7 +440,14 @@ const copy = {
           edit.setAttribute('data-edit', recipe.slug);
           edit.textContent = text('edit');
 
-          actions.append(view, edit);
+          const del = document.createElement('button');
+          del.type = 'button';
+          del.className = 'btn-outline btn-sm';
+          del.style.color = '#9c4c31';
+          del.setAttribute('data-delete', recipe.slug);
+          del.textContent = text('delete');
+
+          actions.append(view, edit, del);
           row.append(info, actions);
           listEl.append(row);
         });
@@ -515,15 +529,66 @@ const copy = {
           });
       }
 
+      function del(slug) {
+        if (!window.confirm(text('deleteConfirm'))) return;
+
+        const body = new FormData();
+        body.set('slug', slug);
+
+        window
+          .fetch('/api/recipes/delete', {
+            method: 'POST',
+            body: body,
+            headers: { Accept: 'application/json' },
+            credentials: 'same-origin',
+          })
+          .then(function (response) {
+            return response
+              .json()
+              .catch(function () {
+                return {};
+              })
+              .then(function (result) {
+                return { ok: response.ok, status: response.status, result: result };
+              });
+          })
+          .then(function (outcome) {
+            if (outcome.ok) {
+              if (activeSlug === slug) closeEditor();
+              setStatus('deleted', 'success');
+              loadRecipes();
+              return;
+            }
+
+            if (outcome.status === 401) {
+              setStatus('saveErrorSession', 'error');
+              window.setTimeout(redirectToLogin, 1500);
+              return;
+            }
+
+            setStatus('deleteError', 'error');
+          })
+          .catch(function () {
+            setStatus('deleteError', 'error');
+          });
+      }
+
       if (listEl) {
         listEl.addEventListener('click', function (event) {
-          const button = event.target.closest('[data-edit]');
-          if (!button) return;
-          const slug = button.getAttribute('data-edit');
-          const recipe = recipes.find(function (item) {
-            return item.slug === slug;
-          });
-          if (recipe) fillEditor(recipe);
+          const editButton = event.target.closest('[data-edit]');
+          if (editButton) {
+            const slug = editButton.getAttribute('data-edit');
+            const recipe = recipes.find(function (item) {
+              return item.slug === slug;
+            });
+            if (recipe) fillEditor(recipe);
+            return;
+          }
+
+          const deleteButton = event.target.closest('[data-delete]');
+          if (!deleteButton) return;
+          const slug = deleteButton.getAttribute('data-delete');
+          if (slug) del(slug);
         });
       }
 

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8f1e7"/>
+      <stop offset="100%" stop-color="#e7d7c2"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="url(#bg)"/>
+  <circle cx="600" cy="410" r="230" fill="#fffdf8"/>
+  <circle cx="600" cy="410" r="230" fill="none" stroke="#d8c3a5" stroke-width="10"/>
+  <circle cx="600" cy="410" r="148" fill="#f3e7d6"/>
+  <circle cx="600" cy="410" r="148" fill="none" stroke="#e2d0b8" stroke-width="6"/>
+  <text x="600" y="742" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="62" fill="#8c6f4f">Foto em breve</text>
+  <text x="600" y="798" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="36" fill="#b0946f">TBC</text>
+</svg>

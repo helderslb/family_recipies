@@ -181,3 +181,10 @@ export function writeRecipeFile(slug: string, input: RecipeInput): boolean {
   return true;
 }
 
+/** Delete a recipe file. Best-effort: returns false only when the slug is unsafe. */
+export function deleteRecipeFile(slug: string): boolean {
+  if (!/^[a-z0-9-]+$/.test(slug)) return false;
+  fs.rmSync(path.join(recipesDir(), `${slug}.md`), { force: true });
+  return true;
+}
+
