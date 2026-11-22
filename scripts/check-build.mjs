@@ -26,6 +26,13 @@ const CLASS_EXEMPT = new Set([
   'print-hide',
   'print-stack',
   'recipe-print',
+  'photo-lightbox',
+  'photo-lightbox-close',
+  'photo-lightbox-nav',
+  'photo-lightbox-prev',
+  'photo-lightbox-next',
+  'photo-lightbox-img',
+  'photo-lightbox-count',
 ]);
 
 function walk(dir, out = []) {

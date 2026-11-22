@@ -19,6 +19,9 @@ const familyStyles: Record<string, string> = {
 };
 
 const familyBadge = familyStyles[data.family] ?? 'border-oatmeal bg-cream/90 text-ink-light';
+
+const images = [data.image, ...(data.gallery ?? [])];
+const hasMultiple = images.length > 1;
 ---
 
 <article
@@ -29,44 +32,68 @@ const familyBadge = familyStyles[data.family] ?? 'border-oatmeal bg-cream/90 tex
   data-search-text={recipeSearchText(recipe)}
   data-slug={slug}
 >
-  <a
-    href={href}
-    class="relative block aspect-[4/3] overflow-hidden bg-oatmeal"
-    data-aria-en={`View recipe: ${text.en.title}`}
-    data-aria-pt={`Ver receita: ${text.pt.title}`}
-    aria-label={`View recipe: ${text.en.title}`}
-    tabindex="-1"
-  >
-    <img
-      src={data.image}
-      alt={text.en.title}
-      loading="lazy"
-      class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
-    />
-    <div
-      class="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+  <div class="relative block aspect-[4/3] overflow-hidden bg-oatmeal" data-images={JSON.stringify(images)}>
+    <a
+      href={href}
+      class="block h-full w-full"
+      data-aria-en={`View recipe: ${text.en.title}`}
+      data-aria-pt={`Ver receita: ${text.pt.title}`}
+      aria-label={`View recipe: ${text.en.title}`}
+      tabindex="-1"
     >
-    </div>
+      <img
+        src={data.image}
+        alt={text.en.title}
+        loading="lazy"
+        data-card-image
+        class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+      />
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+      >
+      </div>
 
-    <span class:list={['badge absolute left-3 top-3', familyBadge]}>
-      <T k={`family.${data.family}`} />
-    </span>
-
-    {data.featured && (
-      <span class="badge absolute right-3 top-3 border-white/30 bg-ink/70 text-white">
-        <T k="card.featured" />
+      <span class:list={['badge absolute left-3 top-3', familyBadge]}>
+        <T k={`family.${data.family}`} />
       </span>
-    )}
 
-    <span
-      class="absolute bottom-3 left-3 inline-flex translate-y-2 items-center gap-1.5 rounded-full bg-cream/95 px-3.5 py-2 text-xs font-semibold text-ink opacity-0 shadow-soft transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
-    >
-      <T k="card.view" />
-      <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"></path>
-      </svg>
-    </span>
-  </a>
+      {data.featured && (
+        <span class="badge absolute right-3 top-3 border-white/30 bg-ink/70 text-white">
+          <T k="card.featured" />
+        </span>
+      )}
+
+      <span
+        class="absolute bottom-3 left-3 inline-flex translate-y-2 items-center gap-1.5 rounded-full bg-cream/95 px-3.5 py-2 text-xs font-semibold text-ink opacity-0 shadow-soft transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
+      >
+        <T k="card.view" />
+        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"></path>
+        </svg>
+      </span>
+    </a>
+
+    {hasMultiple && (
+      <>
+        <button
+          type="button"
+          data-card-prev
+          aria-label="Previous photo"
+          class="absolute left-2 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-ink/55 text-lg font-semibold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-ink/75"
+        >‹</button>
+        <button
+          type="button"
+          data-card-next
+          aria-label="Next photo"
+          class="absolute right-2 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-ink/55 text-lg font-semibold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-ink/75"
+        >›</button>
+        <span
+          data-card-count
+          class="absolute bottom-2 right-2 z-10 rounded-full bg-ink/60 px-2 py-0.5 text-[10px] font-semibold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        >1/{images.length}</span>
+      </>
+    )}
+  </div>
 
   <div class="flex flex-col gap-2.5 p-5">
     <div class="flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-ink-lighter">
@@ -111,3 +138,27 @@ const familyBadge = familyStyles[data.family] ?? 'border-oatmeal bg-cream/90 tex
     </div>
   </div>
 </article>
+
+<script>
+  document.querySelectorAll('[data-images]').forEach(function (card) {
+    const images = JSON.parse(card.getAttribute('data-images') || '[]');
+    if (images.length <= 1) return;
+
+    const img = card.querySelector('[data-card-image]');
+    const count = card.querySelector('[data-card-count]');
+    let index = 0;
+
+    function show(next) {
+      index = (next + images.length) % images.length;
+      img.src = images[index];
+      if (count) count.textContent = index + 1 + '/' + images.length;
+    }
+
+    card.querySelector('[data-card-prev]').addEventListener('click', function () {
+      show(index - 1);
+    });
+    card.querySelector('[data-card-next]').addEventListener('click', function () {
+      show(index + 1);
+    });
+  });
+</script>
