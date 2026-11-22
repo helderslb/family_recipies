@@ -1,0 +1,229 @@
+---
+import Layout from '@/layouts/Layout.astro';
+---
+
+<Layout title="Manage restaurants" titlePt="Gerir restaurantes">
+<div class="container-max py-10 md:py-14">
+  <p class="eyebrow"><span data-lang="en">Admin</span><span data-lang="pt">Administração</span></p>
+  <h1 class="mt-3 text-3xl font-bold md:text-4xl">
+    <span data-lang="en">Manage restaurants</span>
+    <span data-lang="pt">Gerir restaurantes</span>
+  </h1>
+  <p class="mt-2 text-sm text-ink-light">
+    <span data-lang="en">Only the admin can add, edit or remove restaurants.</span>
+    <span data-lang="pt">Só o admin pode adicionar, editar ou remover restaurantes.</span>
+  </p>
+</div>
+
+<div class="container-max pb-16">
+  <form id="restaurant-form" class="rounded-3xl border border-oatmeal bg-white p-6 shadow-soft md:p-8">
+    <input type="hidden" id="rid" name="id" />
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+<div class="sm:col-span-2 lg:col-span-3">
+        <label for="rname" class="label"><span data-lang="en">Name</span><span data-lang="pt">Nome</span></label>
+        <input type="text" id="rname" name="name" class="input" required />
+      </div>
+      <div>
+        <label for="rloc" class="label"><span data-lang="en">City / area</span><span data-lang="pt">Cidade / zona</span></label>
+        <input type="text" id="rloc" name="location" class="input" />
+      </div>
+      <div>
+        <label for="rtype" class="label"><span data-lang="en">Type</span><span data-lang="pt">Tipo</span></label>
+        <input type="text" id="rtype" name="type" class="input" />
+      </div>
+      <div>
+        <label for="rrating" class="label"><span data-lang="en">Your rating</span><span data-lang="pt">A tua nota</span></label>
+        <input type="text" id="rrating" name="rating" class="input" />
+      </div>
+      <div>
+        <label for="rta" class="label">Tripadvisor ★</label>
+        <input type="text" id="rta" name="tripadvisor" class="input" />
+      </div>
+      <div>
+        <label for="rqp" class="label"><span data-lang="en">Quality / price</span><span data-lang="pt">Qualidade / preço</span></label>
+        <input type="text" id="rqp" name="qualityPrice" class="input" />
+      </div>
+      <div>
+        <label for="ramb" class="label"><span data-lang="en">Ambience</span><span data-lang="pt">Ambiente</span></label>
+        <input type="text" id="ramb" name="ambience" class="input" />
+      </div>
+<div>
+        <label for="rprice" class="label"><span data-lang="en">Price</span><span data-lang="pt">Preço</span></label>
+        <input type="text" id="rprice" name="price" class="input" />
+      </div>
+      <div>
+        <label for="rdate" class="label"><span data-lang="en">Date saved</span><span data-lang="pt">Data guardado</span></label>
+        <input type="text" id="rdate" name="date" class="input" />
+      </div>
+      <div>
+        <label for="rlat" class="label"><span data-lang="en">Latitude</span><span data-lang="pt">Latitude</span></label>
+        <input type="text" id="rlat" name="lat" inputmode="decimal" class="input" />
+      </div>
+      <div>
+        <label for="rlng" class="label"><span data-lang="en">Longitude</span><span data-lang="pt">Longitude</span></label>
+        <input type="text" id="rlng" name="lng" inputmode="decimal" class="input" />
+      </div>
+      <div class="sm:col-span-2 lg:col-span-3">
+        <label for="rdesc" class="label"><span data-lang="en">Description</span><span data-lang="pt">Descrição</span></label>
+        <textarea id="rdesc" name="description" rows="3" class="input resize-y"></textarea>
+      </div>
+      <div class="sm:col-span-2">
+        <label for="rlink" class="label"><span data-lang="en">Link</span><span data-lang="pt">Link</span></label>
+        <input type="text" id="rlink" name="link" class="input" />
+      </div>
+      <div>
+        <label for="rnotes" class="label"><span data-lang="en">Notes</span><span data-lang="pt">Notas</span></label>
+        <input type="text" id="rnotes" name="notes" class="input" />
+      </div>
+    </div>
+
+    <div class="mt-6 flex flex-wrap items-center gap-3 border-t border-oatmeal pt-5">
+      <button type="submit" class="btn"><span data-lang="en">Save</span><span data-lang="pt">Guardar</span></button>
+      <button type="button" id="new-btn" class="btn-outline"><span data-lang="en">New / clear</span><span data-lang="pt">Novo / limpar</span></button>
+      <a href="/admin" class="btn-ghost"><span data-lang="en">Back to recipes</span><span data-lang="pt">Voltar às receitas</span></a>
+    </div>
+  </form>
+
+  <p id="status" class="status-note status-info mt-6 hidden"></p>
+
+  <h2 class="section-title mt-10"><span data-lang="en">Restaurants</span><span data-lang="pt">Restaurantes</span></h2>
+  <div id="restaurant-list" class="mt-5 grid gap-4"></div>
+</div>
+<script is:inline>
+    (function () {
+      var form = document.getElementById('restaurant-form');
+      var ridEl = document.getElementById('rid');
+      var listEl = document.getElementById('restaurant-list');
+      var statusEl = document.getElementById('status');
+      var newBtn = document.getElementById('new-btn');
+
+      function lang() {
+        return document.documentElement.getAttribute('data-lang') === 'pt' ? 'pt' : 'en';
+      }
+      function esc(s) {
+        return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+      function setStatus(msg, tone) {
+        if (!statusEl) return;
+        statusEl.textContent = msg;
+        statusEl.classList.remove('hidden', 'status-success', 'status-error', 'status-info');
+        statusEl.classList.add(tone || 'status-info');
+      }
+      function field(name) {
+        return form && form.elements ? form.elements[name] : null;
+      }
+      function setValue(name, value) {
+        var el = field(name);
+        if (el) el.value = value == null ? '' : String(value);
+      }
+      function resetForm() {
+        if (form) form.reset();
+        if (ridEl) ridEl.value = '';
+      }
+      function fillEditor(row) {
+        var d = row.data || {};
+        ['name', 'location', 'type', 'rating', 'tripadvisor', 'qualityPrice', 'ambience', 'price', 'date', 'lat', 'lng', 'description', 'link', 'notes'].forEach(function (k) {
+          setValue(k, d[k]);
+        });
+        if (ridEl) ridEl.value = String(row.id);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+function renderList(rows) {
+        if (!listEl) return;
+        listEl.innerHTML = '';
+        rows.forEach(function (row) {
+          var d = row.data || {};
+          var item = document.createElement('div');
+          item.className = 'admin-row';
+          var info = document.createElement('div');
+          info.className = 'min-w-0';
+          info.innerHTML = '<p class="font-semibold text-ink">' + esc(d.name) + '</p>' +
+            '<p class="text-sm text-ink-light">' + esc(d.location || '') +
+            (d.tripadvisor ? ' · Tripadvisor ★ ' + esc(d.tripadvisor) : '') + '</p>';
+          var actions = document.createElement('div');
+          actions.className = 'flex items-center gap-2';
+          var editBtn = document.createElement('button');
+          editBtn.type = 'button';
+          editBtn.className = 'btn-outline btn-sm';
+          editBtn.textContent = lang() === 'pt' ? 'Editar' : 'Edit';
+          editBtn.addEventListener('click', function () { fillEditor(row); });
+          var delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'btn-outline btn-sm';
+          delBtn.style.color = '#9c4c31';
+          delBtn.textContent = lang() === 'pt' ? 'Apagar' : 'Delete';
+          delBtn.addEventListener('click', function () { del(row.id); });
+          actions.appendChild(editBtn);
+          actions.appendChild(delBtn);
+          item.appendChild(info);
+          item.appendChild(actions);
+          listEl.appendChild(item);
+        });
+      }
+
+      function load() {
+        window.fetch('/api/restaurants', { headers: { Accept: 'application/json' }, credentials: 'same-origin' })
+          .then(function (r) { return r.json(); })
+          .then(function (result) { renderList(result.restaurants || []); })
+          .catch(function () { setStatus(lang() === 'pt' ? 'Não foi possível carregar.' : 'Could not load.', 'status-error'); });
+      }
+
+      function del(id) {
+        if (!window.confirm(lang() === 'pt' ? 'Apagar este restaurante?' : 'Delete this restaurant?')) return;
+        var body = new URLSearchParams();
+        body.set('id', String(id));
+        window.fetch('/api/restaurants/delete', { method: 'POST', body: body, headers: { Accept: 'application/json' }, credentials: 'same-origin' })
+          .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+          .then(function (o) {
+            if (o.ok) {
+              if (ridEl && String(ridEl.value) === String(id)) resetForm();
+              setStatus(lang() === 'pt' ? 'Apagado.' : 'Deleted.', 'status-success');
+              load();
+            } else {
+              setStatus((o.j && o.j.error) || (lang() === 'pt' ? 'Erro ao apagar.' : 'Delete failed.'), 'status-error');
+            }
+          })
+          .catch(function () { setStatus(lang() === 'pt' ? 'Erro ao apagar.' : 'Delete failed.', 'status-error'); });
+      }
+
+      if (form) {
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+          var isNew = !ridEl || !ridEl.value;
+          window.fetch(isNew ? '/api/restaurants/create' : '/api/restaurants/update', {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { Accept: 'application/json' },
+            credentials: 'same-origin',
+          })
+            .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
+            .then(function (o) {
+              if (o.ok) {
+                setStatus(lang() === 'pt' ? 'Guardado.' : 'Saved.', 'status-success');
+                resetForm();
+                load();
+              } else if (o.status === 401) {
+                window.location.replace('/admin/login/?next=/admin/restaurants');
+              } else {
+                setStatus((o.j && o.j.error) || (lang() === 'pt' ? 'Erro ao guardar.' : 'Save failed.'), 'status-error');
+              }
+            })
+            .catch(function () { setStatus(lang() === 'pt' ? 'Erro ao guardar.' : 'Save failed.', 'status-error'); });
+        });
+      }
+
+      if (newBtn) newBtn.addEventListener('click', resetForm);
+
+      window.fetch('/api/auth/session', { headers: { Accept: 'application/json' }, credentials: 'same-origin' })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+          if (!data || !data.authenticated) {
+            window.location.replace('/admin/login/?next=/admin/restaurants');
+            return;
+          }
+          load();
+        })
+        .catch(load);
+    })();
+  </script>
+</Layout>

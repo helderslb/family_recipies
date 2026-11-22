@@ -36,6 +36,15 @@ export function ensureSchema(): Promise<void> {
           updated_at INTEGER NOT NULL
         )`
       )
+      .then(() =>
+        db.execute(
+          `CREATE TABLE IF NOT EXISTS restaurants (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            data TEXT NOT NULL,
+            updated_at INTEGER NOT NULL
+          )`
+        )
+      )
       .then(() => undefined);
   }
 

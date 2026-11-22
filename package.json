@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "astro dev",
-    "prebuild": "node scripts/recipes-sync.mjs pull",
+    "prebuild": "node scripts/recipes-sync.mjs pull && node scripts/restaurants-sync.mjs pull",
     "build": "astro build",
     "postbuild": "node scripts/fix-runtime.mjs",
     "preview": "astro preview",

@@ -2,7 +2,7 @@
 import Layout from '@/layouts/Layout.astro';
 import T from '@/components/T.astro';
 import { translate } from '@/i18n/ui';
-import { restaurants } from '@/lib/restaurants';
+import restaurants from '@/data/restaurants.json';
 
 const withSource = restaurants.map((r) => ({
   ...r,
