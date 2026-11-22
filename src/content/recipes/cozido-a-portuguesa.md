@@ -1,5 +1,5 @@
 ---
-title: Cozido a portuguesa
+title: Cozido à portuguesa
 description: TBC
 image: >-
   https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795366297/family-recipes/cozido-a-portuguesa-1.jpg
@@ -10,7 +10,7 @@ prepTime: TBC
 cookTime: TBC
 totalTime: TBC
 servings: TBC
-titlePt: Cozido a portuguesa
+titlePt: Cozido à portuguesa
 descriptionPt: TBC
 ingredients:
   - TBC
@@ -29,5 +29,9 @@ gallery:
     https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795369666/family-recipes/cozido-a-portuguesa-6.jpg
   - >-
     https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795369667/family-recipes/cozido-a-portuguesa-7.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795372935/family-recipes/cozido-a-portuguesa-8.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795372935/family-recipes/cozido-a-portuguesa-9.jpg
 ---
 

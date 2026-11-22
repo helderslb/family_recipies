@@ -1,5 +1,5 @@
 ---
-title: Camarao
+title: Camarão
 description: TBC
 image: >-
   https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795366291/family-recipes/camarao-1.jpg
@@ -10,7 +10,7 @@ prepTime: TBC
 cookTime: TBC
 totalTime: TBC
 servings: TBC
-titlePt: Camarao
+titlePt: Camarão
 descriptionPt: TBC
 ingredients:
   - TBC
@@ -19,5 +19,9 @@ steps:
 gallery:
   - >-
     https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368105/family-recipes/camarao-2.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795372933/family-recipes/camarao-3.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795372934/family-recipes/camarao-4.jpg
 ---
 

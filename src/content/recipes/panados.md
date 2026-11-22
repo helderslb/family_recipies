@@ -16,5 +16,8 @@ ingredients:
   - TBC
 steps:
   - TBC
+gallery:
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795372925/family-recipes/panados-2.jpg
 ---
 

@@ -19,5 +19,7 @@ steps:
 gallery:
   - >-
     https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795369659/family-recipes/polvo-lagareiro-2.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795372929/family-recipes/polvo-lagareiro-3.jpg
 ---
 

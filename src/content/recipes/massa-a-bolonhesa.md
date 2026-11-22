@@ -1,5 +1,5 @@
 ---
-title: Massa a bolonhesa
+title: Massa à bolonhesa
 description: TBC
 image: >-
   https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795369654/family-recipes/massa-a-bolonhesa-1.jpg
@@ -10,7 +10,7 @@ prepTime: TBC
 cookTime: TBC
 totalTime: TBC
 servings: TBC
-titlePt: Massa a bolonhesa
+titlePt: Massa à bolonhesa
 descriptionPt: TBC
 ingredients:
   - TBC

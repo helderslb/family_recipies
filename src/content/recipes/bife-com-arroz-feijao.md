@@ -1,5 +1,5 @@
 ---
-title: Bife com arroz feijão
+title: Bife com arroz de feijão
 description: TBC
 image: >-
   https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795366287/family-recipes/bife-com-arroz-feijao-1.jpg
@@ -10,7 +10,7 @@ prepTime: TBC
 cookTime: TBC
 totalTime: TBC
 servings: TBC
-titlePt: Bife com arroz feijão
+titlePt: Bife com arroz de feijão
 descriptionPt: TBC
 ingredients:
   - TBC

@@ -1,5 +1,5 @@
 ---
-title: Bacalhau a bras
+title: Bacalhau à Brás
 description: TBC
 image: >-
   https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795366285/family-recipes/bacalhau-a-bras-1.jpg
@@ -10,7 +10,7 @@ prepTime: TBC
 cookTime: TBC
 totalTime: TBC
 servings: TBC
-titlePt: Bacalhau a bras
+titlePt: Bacalhau à Brás
 descriptionPt: TBC
 ingredients:
   - TBC

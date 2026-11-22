@@ -1,5 +1,5 @@
 ---
-title: Carne de Vaca estufada
+title: Carne de vaca estufada
 description: TBC
 image: >-
   https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795369649/family-recipes/carne-de-vaca-estufada-1.jpg
@@ -10,7 +10,7 @@ prepTime: TBC
 cookTime: TBC
 totalTime: TBC
 servings: TBC
-titlePt: Carne de Vaca estufada
+titlePt: Carne de vaca estufada
 descriptionPt: TBC
 ingredients:
   - TBC
