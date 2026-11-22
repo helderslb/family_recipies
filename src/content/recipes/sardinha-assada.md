@@ -16,5 +16,12 @@ ingredients:
   - TBC
 steps:
   - TBC
+gallery:
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368091/family-recipes/sardinha-assada-2.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368092/family-recipes/sardinha-assada-3.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368093/family-recipes/sardinha-assada-4.jpg
 ---
 

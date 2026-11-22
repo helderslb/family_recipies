@@ -16,5 +16,10 @@ ingredients:
   - TBC
 steps:
   - TBC
+gallery:
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368073/family-recipes/bife-com-arroz-feijao-2.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368074/family-recipes/bife-com-arroz-feijao-3.jpg
 ---
 

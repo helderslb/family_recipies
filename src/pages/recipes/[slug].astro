@@ -191,6 +191,37 @@ const related = allRecipes
         </div>
       )}
 
+      {data.gallery && data.gallery.length > 0 && (
+        <div class="print-hide mb-12">
+          <h2 class="section-title flex items-center gap-3">
+            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-terracotta/10 text-terracotta-dark">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8a2 2 0 012-2h1.2l1-1.5A2 2 0 019.7 4h4.6a2 2 0 011.5.7l1 1.5H18a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </span>
+            <T k="recipe.photos" />
+          </h2>
+          <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {data.gallery.map((src, index) => (
+              <a
+                href={src}
+                target="_blank"
+                rel="noopener"
+                class="group block aspect-[4/3] overflow-hidden rounded-2xl border border-oatmeal bg-oatmeal"
+              >
+                <img
+                  src={src}
+                  alt={`${text.en.title} — ${index + 1}`}
+                  loading="lazy"
+                  class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div class="print-stack grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start lg:gap-12">
         <div class="space-y-12">
           {hasStory && (

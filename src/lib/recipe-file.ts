@@ -19,6 +19,8 @@ export interface RecipeInput {
   totalTime: string;
   servings: string;
   video?: string;
+  /** Extra photos (image URLs) shown in a gallery below the hero image. */
+  gallery?: string[];
   featured: boolean;
   ingredients: string[];
   steps: string[];
@@ -69,6 +71,7 @@ function field(form: FormData, name: string): string {
 export function recipeFromFormData(form: FormData): RecipeInput {
   const ingredientsPt = splitLines(form.get('ingredientsPt'));
   const stepsPt = splitLines(form.get('stepsPt'));
+  const gallery = splitLines(form.get('gallery'));
 
   return {
     title: field(form, 'title'),
@@ -89,6 +92,7 @@ export function recipeFromFormData(form: FormData): RecipeInput {
     descriptionPt: field(form, 'descriptionPt') || undefined,
     ingredientsPt: ingredientsPt.length > 0 ? ingredientsPt : undefined,
     stepsPt: stepsPt.length > 0 ? stepsPt : undefined,
+    gallery: gallery.length > 0 ? gallery : undefined,
     story: field(form, 'story') || undefined,
     storyPt: field(form, 'storyPt') || undefined,
   };
@@ -153,6 +157,7 @@ export function buildRecipeMarkdown(input: RecipeInput): string {
   frontmatter.push(`servings: ${yamlScalar(input.servings)}`);
 
   if (input.video) frontmatter.push(yamlLine('video', input.video));
+  if (input.gallery?.length) frontmatter.push(yamlList('gallery', input.gallery));
   if (input.featured) frontmatter.push('featured: true');
 
   if (input.titlePt) frontmatter.push(yamlLine('titlePt', input.titlePt));

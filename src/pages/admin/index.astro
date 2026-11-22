@@ -168,6 +168,18 @@ const copy = {
               </div>
 
               <div class="sm:col-span-2">
+                <label for="edit-gallery" class="label"><T k="create.photos" /></label>
+                <textarea
+                  id="edit-gallery"
+                  name="gallery"
+                  rows="4"
+                  placeholder="https://res.cloudinary.com/…/recipe-2.jpg"
+                  class="input resize-y font-mono text-[13px] leading-relaxed"
+                ></textarea>
+                <p class="mt-1 text-xs text-ink-lighter"><T k="create.photosHelp" /></p>
+              </div>
+
+              <div class="sm:col-span-2">
                 <label class="flex items-center gap-3 text-sm font-medium text-ink">
                   <input
                     type="checkbox"
@@ -466,6 +478,7 @@ const copy = {
         setValue('servings', recipe.servings);
         setValue('image', recipe.image);
         setValue('video', recipe.video || '');
+        setValue('gallery', (recipe.gallery || []).join('\n'));
         setValue('prepTime', recipe.prepTime);
         setValue('cookTime', recipe.cookTime);
         setValue('totalTime', recipe.totalTime);

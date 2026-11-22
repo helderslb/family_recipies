@@ -16,5 +16,14 @@ ingredients:
   - TBC
 steps:
   - TBC
+gallery:
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368101/family-recipes/bacalhau-a-braga-2.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368102/family-recipes/bacalhau-a-braga-3.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368102/family-recipes/bacalhau-a-braga-4.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368103/family-recipes/bacalhau-a-braga-5.jpg
 ---
 

@@ -16,5 +16,10 @@ ingredients:
   - TBC
 steps:
   - TBC
+gallery:
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368097/family-recipes/arroz-de-pato-2.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368098/family-recipes/arroz-de-pato-3.jpg
 ---
 

@@ -16,17 +16,30 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import matter from 'gray-matter';
+import sharp from 'sharp';
 
 const ROOT = process.cwd();
 const RECIPES_DIR = path.join(ROOT, 'src', 'content', 'recipes');
 const IMAGES_DIR = path.join(ROOT, 'public', 'images');
 const VIDEOS_DIR = path.join(ROOT, 'public', 'videos');
+const PICTURES_DIR = path.join(ROOT, 'pictures');
+
+const IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif']);
 
 const CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
 const API_KEY = process.env.CLOUDINARY_API_KEY;
 const API_SECRET = process.env.CLOUDINARY_API_SECRET;
 
 const FOLDER = 'family-recipes'; // Cloudinary folder the assets live under.
+
+function slugify(title) {
+  return title
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
 
 if (!CLOUD_NAME || !API_KEY || !API_SECRET) {
   console.error('Missing CLOUDINARY_CLOUD_NAME / CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET in .env');
@@ -40,7 +53,8 @@ console.log(`Cloud name: ${CLOUD_NAME}`);
  * `file`, `cloud_name`, `resource_type` and `api_key`, sorted alphabetically,
  * joined with `&`, with the API secret appended (no delimiter) and SHA-1 hashed.
  */
-async function upload(filePath, resourceType, publicId) {
+/** Core signed upload of an in-memory blob. */
+async function uploadBlob(blob, filename, resourceType, publicId) {
   const timestamp = Math.floor(Date.now() / 1000).toString();
   const params = {
     overwrite: 'true',
@@ -57,7 +71,7 @@ async function upload(filePath, resourceType, publicId) {
   const signature = crypto.createHash('sha1').update(toSign).digest('hex');
 
   const form = new FormData();
-  form.append('file', new Blob([fs.readFileSync(filePath)]), path.basename(filePath));
+  form.append('file', blob, filename);
   form.append('api_key', API_KEY);
   for (const [key, value] of Object.entries(params)) form.append(key, value);
   form.append('signature', signature);
@@ -72,6 +86,21 @@ async function upload(filePath, resourceType, publicId) {
     throw new Error(`Upload failed for ${publicId}: ${body.error?.message ?? JSON.stringify(body)}`);
   }
   return body;
+}
+
+/** Upload a file from disk as-is (hero image and the video). */
+async function upload(filePath, resourceType, publicId) {
+  return uploadBlob(new Blob([fs.readFileSync(filePath)]), path.basename(filePath), resourceType, publicId);
+}
+
+/** Optimise then upload a photo (gallery images straight from pictures/). */
+async function uploadResized(filePath, resourceType, publicId) {
+  const buffer = await sharp(filePath)
+    .rotate()
+    .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
+    .jpeg({ quality: 80, mozjpeg: true })
+    .toBuffer();
+  return uploadBlob(new Blob([buffer]), `${publicId.split('/').pop()}.jpg`, resourceType, publicId);
 }
 
 /**
@@ -108,6 +137,58 @@ async function destroy(publicId, resourceType) {
 /** Delivery URL with quality/format auto-optimisation for images. */
 function imageUrl(data) {
   return data.secure_url.replace('/image/upload/', '/image/upload/f_auto,q_auto/');
+}
+
+/** Upload the extra photos (beyond the hero) for every recipe, up to 10 total. */
+async function uploadGallery() {
+  if (!fs.existsSync(PICTURES_DIR)) {
+    console.warn(`No pictures directory at ${PICTURES_DIR} — skipping gallery.`);
+    return;
+  }
+
+  const folders = fs
+    .readdirSync(PICTURES_DIR)
+    .filter((entry) => fs.statSync(path.join(PICTURES_DIR, entry)).isDirectory())
+    .sort();
+
+  let uploaded = 0;
+
+  for (const folder of folders) {
+    const slug = slugify(folder);
+    if (!slug || slug === 'arroz-de-bacalhau') continue; // pre-existing recipe, already handled
+
+    const mdPath = path.join(RECIPES_DIR, `${slug}.md`);
+    if (!fs.existsSync(mdPath)) continue;
+    const parsed = matter.read(mdPath);
+    if (parsed.data.gallery?.length) {
+      console.log(`skip   ${folder} (gallery already set)`);
+      continue;
+    }
+
+    const photos = fs
+      .readdirSync(path.join(PICTURES_DIR, folder))
+      .filter((file) => IMAGE_EXTS.has(path.extname(file).toLowerCase()))
+      .sort();
+
+    // photos[0] is the hero (already on Cloudinary as <slug>-1).
+    const gallery = [];
+    const maxIndex = Math.min(photos.length, 10);
+    for (let i = 1; i < maxIndex; i++) {
+      const publicId = `${FOLDER}/${slug}-${i + 1}`;
+      const data = await uploadResized(path.join(PICTURES_DIR, folder, photos[i]), 'image', publicId);
+      gallery.push(imageUrl(data));
+      uploaded += 1;
+      console.log(`gallery ${folder} #${i + 1}`);
+    }
+
+    if (gallery.length > 0) {
+      parsed.data.gallery = gallery;
+      fs.writeFileSync(mdPath, matter.stringify(parsed.content, parsed.data), 'utf8');
+      console.log(`rewrote ${slug}.md with ${gallery.length} gallery photo(s)`);
+    }
+  }
+
+  console.log(`\nGallery: uploaded ${uploaded} extra photo(s).`);
 }
 
 async function main() {
@@ -168,6 +249,8 @@ async function main() {
       if (removed?.result === 'ok') console.log(`cleaned legacy video ${legacyId}`);
     }
   }
+
+  await uploadGallery();
 
   let rewritten = 0;
   for (const [slug, fields] of Object.entries(updates)) {

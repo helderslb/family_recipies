@@ -16,5 +16,14 @@ ingredients:
   - TBC
 steps:
   - TBC
+gallery:
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368107/family-recipes/cozido-a-portuguesa-2.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368108/family-recipes/cozido-a-portuguesa-3.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368109/family-recipes/cozido-a-portuguesa-4.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368110/family-recipes/cozido-a-portuguesa-5.jpg
 ---
 

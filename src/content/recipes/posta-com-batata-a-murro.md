@@ -16,5 +16,12 @@ ingredients:
   - TBC
 steps:
   - TBC
+gallery:
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368083/family-recipes/posta-com-batata-a-murro-2.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368084/family-recipes/posta-com-batata-a-murro-3.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368085/family-recipes/posta-com-batata-a-murro-4.jpg
 ---
 

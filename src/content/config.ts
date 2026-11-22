@@ -16,6 +16,8 @@ const recipes = defineCollection({
     // YouTube links and direct .mp4 URLs are both supported. We also accept
     // relative public paths (e.g. /videos/feijoada.mp4) so local videos render.
     video: z.string().optional(),
+    /** Extra photos rendered in a gallery below the hero image. */
+    gallery: z.array(z.string()).optional(),
     ingredients: z.array(z.string()).min(1),
     steps: z.array(z.string()).min(1),
     featured: z.boolean().optional().default(false),

@@ -16,5 +16,8 @@ ingredients:
   - TBC
 steps:
   - TBC
+gallery:
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368105/family-recipes/camarao-2.jpg
 ---
 

@@ -119,6 +119,7 @@ export const en = {
   'recipe.related': 'More from the family cookbook',
   'recipe.viewAll': 'All recipes',
   'recipe.video': 'cooking video',
+  'recipe.photos': 'Photos',
 
   // ---------- Restaurants map ----------
   'restaurants.eyebrow': 'Out & about',
@@ -175,6 +176,8 @@ export const en = {
   'create.imageHelp': 'Landscape shots work best — roughly 4:3 or 16:9.',
   'create.video': 'Video (optional)',
   'create.videoHelp': 'YouTube links or a direct .mp4 URL.',
+  'create.photos': 'Additional photos (optional)',
+  'create.photosHelp': 'One image URL per line — shown in a gallery below the main photo.',
   'create.ingredientsSection': 'Ingredients & method',
   'create.ingredientsHelp': 'One ingredient or step per line — we turn them into a checklist.',
   'create.ingredients': 'Ingredients',
@@ -377,6 +380,7 @@ export const pt: Record<UIKey, string> = {
   'recipe.related': 'Mais do livro de receitas da família',
   'recipe.viewAll': 'Todas as receitas',
   'recipe.video': 'vídeo de confeção',
+  'recipe.photos': 'Fotografias',
 
   // ---------- Restaurants map ----------
   'restaurants.eyebrow': 'Para comer fora',
@@ -433,6 +437,8 @@ export const pt: Record<UIKey, string> = {
   'create.imageHelp': 'Fotografias na horizontal funcionam melhor — cerca de 4:3 ou 16:9.',
   'create.video': 'Vídeo (opcional)',
   'create.videoHelp': 'Ligações do YouTube ou um URL direto .mp4.',
+  'create.photos': 'Fotografias adicionais (opcional)',
+  'create.photosHelp': 'Um URL de imagem por linha — mostradas numa galeria por baixo da foto principal.',
   'create.ingredientsSection': 'Ingredientes e preparação',
   'create.ingredientsHelp':
     'Um ingrediente ou passo por linha — transformamos numa lista de verificação.',

@@ -16,5 +16,8 @@ ingredients:
   - TBC
 steps:
   - TBC
+gallery:
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368087/family-recipes/robalo-grelhado-2.jpg
 ---
 
