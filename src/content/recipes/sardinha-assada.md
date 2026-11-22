@@ -23,5 +23,9 @@ gallery:
     https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368092/family-recipes/sardinha-assada-3.jpg
   - >-
     https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368093/family-recipes/sardinha-assada-4.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795369662/family-recipes/sardinha-assada-5.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795369663/family-recipes/sardinha-assada-6.jpg
 ---
 

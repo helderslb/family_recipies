@@ -25,5 +25,9 @@ gallery:
     https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368109/family-recipes/cozido-a-portuguesa-4.jpg
   - >-
     https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368110/family-recipes/cozido-a-portuguesa-5.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795369666/family-recipes/cozido-a-portuguesa-6.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795369667/family-recipes/cozido-a-portuguesa-7.jpg
 ---
 

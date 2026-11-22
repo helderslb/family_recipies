@@ -23,5 +23,9 @@ gallery:
     https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368084/family-recipes/posta-com-batata-a-murro-3.jpg
   - >-
     https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368085/family-recipes/posta-com-batata-a-murro-4.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795369660/family-recipes/posta-com-batata-a-murro-5.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795369660/family-recipes/posta-com-batata-a-murro-6.jpg
 ---
 

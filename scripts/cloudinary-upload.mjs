@@ -1,13 +1,16 @@
-// Upload the locally-imported recipe media (public/images + public/videos) to
-// Cloudinary using signed uploads, then rewrite each recipe's `image`/`video`
-// frontmatter to the Cloudinary delivery URLs.
+// Sync the recipe collection with the `pictures/` folder and Cloudinary.
+//
+// For every folder in `pictures/`:
+//   - creates a TBC recipe draft when there's no matching recipe file yet;
+//   - uploads the hero photo plus up to 9 extra photos (10 in total) to Cloudinary;
+//   - uploads a video if present and the recipe still points at a local path.
+// Then removes any recipe whose `pictures/` folder no longer exists.
 //
 // Requirements (in .env):
 //   CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
+//   TURSO_DATABASE_URL / TURSO_AUTH_TOKEN (so orphan removal also cleans the DB)
 //
-// Idempotent: recipes already pointing at Cloudinary are skipped, and re-running
-// overwrites the same Cloudinary assets (unique_filename is disabled) so the
-// URLs stay stable.
+// Idempotent: already-migrated assets are skipped (incremental).
 //
 // Usage:
 //   node scripts/cloudinary-upload.mjs
@@ -17,20 +20,22 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import matter from 'gray-matter';
 import sharp from 'sharp';
+import { createClient } from '@libsql/client/web';
 
 const ROOT = process.cwd();
 const RECIPES_DIR = path.join(ROOT, 'src', 'content', 'recipes');
-const IMAGES_DIR = path.join(ROOT, 'public', 'images');
-const VIDEOS_DIR = path.join(ROOT, 'public', 'videos');
 const PICTURES_DIR = path.join(ROOT, 'pictures');
-
-const IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif']);
 
 const CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
 const API_KEY = process.env.CLOUDINARY_API_KEY;
 const API_SECRET = process.env.CLOUDINARY_API_SECRET;
 
-const FOLDER = 'family-recipes'; // Cloudinary folder the assets live under.
+const CLOUDINARY_FOLDER = 'family-recipes';
+const MAX_PHOTOS = 10;
+
+const IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif']);
+const VIDEO_EXTS = new Set(['.mp4', '.mov', '.webm', '.m4v']);
+const DESSERT_KEYWORDS = ['chessecake', 'cheesecake', 'leite creme', 'pudim', 'sobremesa', 'bolo', 'doce', 'mousse', 'tarte'];
 
 function slugify(title) {
   return title
@@ -41,6 +46,16 @@ function slugify(title) {
     .replace(/^-+|-+$/g, '');
 }
 
+function humanize(name) {
+  const fixed = name.trim().replace(/á/g, 'à');
+  return fixed.charAt(0).toUpperCase() + fixed.slice(1);
+}
+
+function isDessert(name) {
+  const n = name.toLowerCase();
+  return DESSERT_KEYWORDS.some((keyword) => new RegExp(`\\b${keyword}\\b`).test(n));
+}
+
 if (!CLOUD_NAME || !API_KEY || !API_SECRET) {
   console.error('Missing CLOUDINARY_CLOUD_NAME / CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET in .env');
   process.exit(1);
@@ -48,11 +63,6 @@ if (!CLOUD_NAME || !API_KEY || !API_SECRET) {
 
 console.log(`Cloud name: ${CLOUD_NAME}`);
 
-/**
- * Signed Upload API request. The signature covers every POST parameter except
- * `file`, `cloud_name`, `resource_type` and `api_key`, sorted alphabetically,
- * joined with `&`, with the API secret appended (no delimiter) and SHA-1 hashed.
- */
 /** Core signed upload of an in-memory blob. */
 async function uploadBlob(blob, filename, resourceType, publicId) {
   const timestamp = Math.floor(Date.now() / 1000).toString();
@@ -88,50 +98,14 @@ async function uploadBlob(blob, filename, resourceType, publicId) {
   return body;
 }
 
-/** Upload a file from disk as-is (hero image and the video). */
-async function upload(filePath, resourceType, publicId) {
-  return uploadBlob(new Blob([fs.readFileSync(filePath)]), path.basename(filePath), resourceType, publicId);
-}
-
-/** Optimise then upload a photo (gallery images straight from pictures/). */
-async function uploadResized(filePath, resourceType, publicId) {
+/** Optimise then upload a photo from disk. */
+async function uploadResized(filePath, publicId) {
   const buffer = await sharp(filePath)
     .rotate()
     .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
     .jpeg({ quality: 80, mozjpeg: true })
     .toBuffer();
-  return uploadBlob(new Blob([buffer]), `${publicId.split('/').pop()}.jpg`, resourceType, publicId);
-}
-
-/**
- * Delete an asset. Also used to remove the extension-bearing `public_id` created
- * by an earlier run of this script (self-healing cleanup).
- */
-async function destroy(publicId, resourceType) {
-  const timestamp = Math.floor(Date.now() / 1000).toString();
-  const params = { public_id: publicId, timestamp };
-  const toSign =
-    Object.keys(params)
-      .sort()
-      .map((key) => `${key}=${params[key]}`)
-      .join('&') + API_SECRET;
-  const signature = crypto.createHash('sha1').update(toSign).digest('hex');
-
-  const form = new URLSearchParams();
-  form.set('public_id', publicId);
-  form.set('timestamp', timestamp);
-  form.set('signature', signature);
-  form.set('api_key', API_KEY);
-
-  const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/destroy`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: form.toString(),
-    }
-  );
-  return response.json();
+  return uploadBlob(new Blob([buffer]), `${publicId.split('/').pop()}.jpg`, 'image', publicId);
 }
 
 /** Delivery URL with quality/format auto-optimisation for images. */
@@ -139,138 +113,140 @@ function imageUrl(data) {
   return data.secure_url.replace('/image/upload/', '/image/upload/f_auto,q_auto/');
 }
 
-/** Upload the extra photos (beyond the hero) for every recipe, up to 10 total. */
-async function uploadGallery() {
-  if (!fs.existsSync(PICTURES_DIR)) {
-    console.warn(`No pictures directory at ${PICTURES_DIR} — skipping gallery.`);
-    return;
+function tursoClient() {
+  const url = process.env.TURSO_DATABASE_URL;
+  const authToken = process.env.TURSO_AUTH_TOKEN;
+  if (!url || !authToken) return null;
+  return createClient({ url, authToken });
+}
+
+/** Write a TBC draft for a folder that has no recipe yet. */
+function createDraft(slug, title, category) {
+  const data = {
+    title,
+    description: 'TBC',
+    image: '/images/placeholder.svg',
+    author: 'Family',
+    family: 'Family',
+    category,
+    prepTime: 'TBC',
+    cookTime: 'TBC',
+    totalTime: 'TBC',
+    servings: 'TBC',
+    titlePt: title,
+    descriptionPt: 'TBC',
+    ingredients: ['TBC'],
+    steps: ['TBC'],
+  };
+  fs.writeFileSync(path.join(RECIPES_DIR, `${slug}.md`), matter.stringify('', data), 'utf8');
+  console.log(`draft  ${slug} (${category})`);
+}
+
+/** Sync the hero photos, gallery and video for one pictures/ folder → Cloudinary. */
+async function syncFolder(folder) {
+  const slug = slugify(folder);
+  if (!slug || slug === 'arroz-de-bacalhau') return false; // pre-existing recipe, kept as-is
+
+  const title = humanize(folder);
+  const mdPath = path.join(RECIPES_DIR, `${slug}.md`);
+  if (!fs.existsSync(mdPath)) createDraft(slug, title, isDessert(folder) ? 'Desserts' : 'Mains');
+
+  const parsed = matter.read(mdPath);
+
+  const photos = fs
+    .readdirSync(path.join(PICTURES_DIR, folder))
+    .filter((file) => IMAGE_EXTS.has(path.extname(file).toLowerCase()))
+    .sort();
+  const videos = fs
+    .readdirSync(path.join(PICTURES_DIR, folder))
+    .filter((file) => VIDEO_EXTS.has(path.extname(file).toLowerCase()))
+    .sort();
+
+  let changed = false;
+
+  // Hero (photo #1) — set whenever the recipe still points at a local image.
+  if (photos.length > 0 && (!parsed.data.image || String(parsed.data.image).startsWith('/images/'))) {
+    const data = await uploadResized(path.join(PICTURES_DIR, folder, photos[0]), `${CLOUDINARY_FOLDER}/${slug}-1`);
+    parsed.data.image = imageUrl(data);
+    changed = true;
+    console.log(`hero   ${folder} -> ${parsed.data.image}`);
   }
+
+  // Gallery (up to MAX_PHOTOS total, including the hero).
+  const gallery = Array.isArray(parsed.data.gallery) ? parsed.data.gallery.slice() : [];
+  const maxGallery = Math.min(photos.length, MAX_PHOTOS) - 1;
+  for (let j = gallery.length; j < maxGallery; j++) {
+    const data = await uploadResized(path.join(PICTURES_DIR, folder, photos[j + 1]), `${CLOUDINARY_FOLDER}/${slug}-${j + 2}`);
+    gallery.push(imageUrl(data));
+    console.log(`gallery ${folder} #${j + 2}`);
+  }
+  if (gallery.length > 0 && gallery.length > (parsed.data.gallery?.length ?? 0)) {
+    parsed.data.gallery = gallery;
+    changed = true;
+  }
+
+  // Video — upload only if still pointing at a local path.
+  if (videos.length > 0 && (!parsed.data.video || String(parsed.data.video).startsWith('/videos/'))) {
+    const src = path.join(PICTURES_DIR, folder, videos[0]);
+    const publicId = `${CLOUDINARY_FOLDER}/${slug}`;
+    const data = await uploadBlob(new Blob([fs.readFileSync(src)]), videos[0], 'video', publicId);
+    parsed.data.video = data.secure_url;
+    changed = true;
+    console.log(`video  ${folder} -> ${parsed.data.video}`);
+  }
+
+  if (changed) {
+    fs.writeFileSync(mdPath, matter.stringify(parsed.content, parsed.data), 'utf8');
+    console.log(`rewrote ${slug}.md`);
+  }
+
+  return changed;
+}
+
+/** Delete recipe files whose pictures/ folder no longer exists. */
+async function pruneOrphans(validSlugs) {
+  const files = fs.readdirSync(RECIPES_DIR).filter((file) => file.endsWith('.md'));
+  const db = tursoClient();
+  if (db) {
+    await db.execute(
+      `CREATE TABLE IF NOT EXISTS recipes (slug TEXT PRIMARY KEY, markdown TEXT NOT NULL, updated_at INTEGER NOT NULL)`
+    );
+  }
+
+  let removed = 0;
+  for (const file of files) {
+    const slug = file.slice(0, -3);
+    if (validSlugs.has(slug)) continue;
+
+    fs.rmSync(path.join(RECIPES_DIR, file), { force: true });
+    if (db) await db.execute({ sql: 'DELETE FROM recipes WHERE slug = ?', args: [slug] });
+    console.log(`removed ${slug} (no pictures folder)`);
+    removed += 1;
+  }
+  return removed;
+}
+
+async function main() {
+  if (!fs.existsSync(PICTURES_DIR)) {
+    console.error(`No pictures directory at ${PICTURES_DIR}`);
+    process.exit(1);
+  }
+  fs.mkdirSync(RECIPES_DIR, { recursive: true });
 
   const folders = fs
     .readdirSync(PICTURES_DIR)
     .filter((entry) => fs.statSync(path.join(PICTURES_DIR, entry)).isDirectory())
     .sort();
 
-  let uploaded = 0;
-
+  let updated = 0;
   for (const folder of folders) {
-    const slug = slugify(folder);
-    if (!slug || slug === 'arroz-de-bacalhau') continue; // pre-existing recipe, already handled
-
-    const mdPath = path.join(RECIPES_DIR, `${slug}.md`);
-    if (!fs.existsSync(mdPath)) continue;
-    const parsed = matter.read(mdPath);
-    if (parsed.data.gallery?.length) {
-      console.log(`skip   ${folder} (gallery already set)`);
-      continue;
-    }
-
-    const photos = fs
-      .readdirSync(path.join(PICTURES_DIR, folder))
-      .filter((file) => IMAGE_EXTS.has(path.extname(file).toLowerCase()))
-      .sort();
-
-    // photos[0] is the hero (already on Cloudinary as <slug>-1).
-    const gallery = [];
-    const maxIndex = Math.min(photos.length, 10);
-    for (let i = 1; i < maxIndex; i++) {
-      const publicId = `${FOLDER}/${slug}-${i + 1}`;
-      const data = await uploadResized(path.join(PICTURES_DIR, folder, photos[i]), 'image', publicId);
-      gallery.push(imageUrl(data));
-      uploaded += 1;
-      console.log(`gallery ${folder} #${i + 1}`);
-    }
-
-    if (gallery.length > 0) {
-      parsed.data.gallery = gallery;
-      fs.writeFileSync(mdPath, matter.stringify(parsed.content, parsed.data), 'utf8');
-      console.log(`rewrote ${slug}.md with ${gallery.length} gallery photo(s)`);
-    }
+    if (await syncFolder(folder)) updated += 1;
   }
 
-  console.log(`\nGallery: uploaded ${uploaded} extra photo(s).`);
-}
+  const validSlugs = new Set(folders.map(slugify).filter(Boolean));
+  const removed = await pruneOrphans(validSlugs);
 
-async function main() {
-  const imageFiles = fs
-    .readdirSync(IMAGES_DIR)
-    .filter((file) => /-1\.(jpe?g|png|webp|gif)$/i.test(file));
-
-  const videoFiles = fs.existsSync(VIDEOS_DIR)
-    ? fs.readdirSync(VIDEOS_DIR).filter((file) => /\.(mp4|mov|webm|m4v)$/i.test(file))
-    : [];
-
-  const updates = {}; // slug -> { image?, video? }
-
-  for (const file of imageFiles) {
-    const slug = file.replace(/-1\.(jpe?g|png|webp|gif)$/i, '');
-    const mdPath = path.join(RECIPES_DIR, `${slug}.md`);
-    if (!fs.existsSync(mdPath)) continue;
-
-    const current = matter.read(mdPath);
-    if (current.data.image && !String(current.data.image).startsWith('/images/')) {
-      console.log(`skip   ${file} (already migrated)`);
-      continue;
-    }
-
-    const publicId = `${FOLDER}/${slug}-1`;
-    const data = await upload(path.join(IMAGES_DIR, file), 'image', publicId);
-    updates[slug] = updates[slug] || {};
-    updates[slug].image = imageUrl(data);
-    console.log(`image  ${file} -> ${updates[slug].image}`);
-
-    const legacyId = `${FOLDER}/${slug}-1${path.extname(file).toLowerCase()}`;
-    if (legacyId !== publicId) {
-      const removed = await destroy(legacyId, 'image');
-      if (removed?.result === 'ok') console.log(`cleaned legacy image ${legacyId}`);
-    }
-  }
-
-  for (const file of videoFiles) {
-    const slug = file.replace(/\.[a-z0-9]+$/i, '');
-    const mdPath = path.join(RECIPES_DIR, `${slug}.md`);
-    if (!fs.existsSync(mdPath)) continue;
-
-    const current = matter.read(mdPath);
-    if (current.data.video && !String(current.data.video).startsWith('/videos/')) {
-      console.log(`skip   ${file} (already migrated)`);
-      continue;
-    }
-
-    const publicId = `${FOLDER}/${slug}`;
-    const data = await upload(path.join(VIDEOS_DIR, file), 'video', publicId);
-    updates[slug] = updates[slug] || {};
-    updates[slug].video = data.secure_url;
-    console.log(`video  ${file} -> ${updates[slug].video}`);
-
-    const legacyId = `${FOLDER}/${file.toLowerCase()}`;
-    if (legacyId !== publicId) {
-      const removed = await destroy(legacyId, 'video');
-      if (removed?.result === 'ok') console.log(`cleaned legacy video ${legacyId}`);
-    }
-  }
-
-  await uploadGallery();
-
-  let rewritten = 0;
-  for (const [slug, fields] of Object.entries(updates)) {
-    const filePath = path.join(RECIPES_DIR, `${slug}.md`);
-    if (!fs.existsSync(filePath)) {
-      console.warn(`No recipe file for slug "${slug}" — skipping rewrite.`);
-      continue;
-    }
-
-    const parsed = matter.read(filePath);
-    if (fields.image) parsed.data.image = fields.image;
-    if (fields.video) parsed.data.video = fields.video;
-    fs.writeFileSync(filePath, matter.stringify(parsed.content, parsed.data), 'utf8');
-    console.log(`rewrote src/content/recipes/${slug}.md`);
-    rewritten += 1;
-  }
-
-  console.log(
-    `\nDone. Uploaded ${imageFiles.length} image(s) and ${videoFiles.length} video(s); rewrote ${rewritten} recipe(s).`
-  );
+  console.log(`\nDone. Updated ${updated} recipe(s); removed ${removed} orphan recipe(s).`);
 }
 
 main().catch((error) => {

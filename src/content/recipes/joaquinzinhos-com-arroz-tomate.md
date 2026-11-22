@@ -19,5 +19,7 @@ steps:
 gallery:
   - >-
     https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368111/family-recipes/joaquinzinhos-com-arroz-tomate-2.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795369671/family-recipes/joaquinzinhos-com-arroz-tomate-3.jpg
 ---
 

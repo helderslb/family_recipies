@@ -77,24 +77,24 @@ console.log('\nHomepage: search, filters and empty state');
 const home = await load('index.html');
 
 await test('renders every recipe from the collection', () => {
-  assert.equal(cards(home.document).length, 36);
-  assert.equal(visibleCards(home.document).length, 36);
-  assert.equal(count(home.document), '36');
+  assert.equal(cards(home.document).length, 40);
+  assert.equal(visibleCards(home.document).length, 40);
+  assert.equal(count(home.document), '40');
   assert.ok(isHidden(home.document.getElementById('empty-state')));
 });
 
 await test('typing in the search filters cards live', () => {
-  type(home.window, home.document.getElementById('search'), 'chocolate');
+  type(home.window, home.document.getElementById('search'), 'feijoada');
   assert.equal(visibleCards(home.document).length, 1);
   assert.equal(count(home.document), '1');
-  assert.match(visibleCards(home.document)[0].dataset.searchText, /chocolate chip/);
+  assert.match(visibleCards(home.document)[0].dataset.searchText, /feijoada/);
 });
 
-await test('search also matches ingredients and author', () => {
+await test('search also matches titles and ingredients', () => {
   type(home.window, home.document.getElementById('search'), 'bacalhau');
   assert.equal(visibleCards(home.document).length, 5);
 
-  type(home.window, home.document.getElementById('search'), 'grandma rose');
+  type(home.window, home.document.getElementById('search'), 'carolino');
   assert.equal(visibleCards(home.document).length, 1);
 });
 
@@ -106,18 +106,18 @@ await test('search inputs stay in sync', () => {
 
 await test('clearing the search restores all recipes', () => {
   type(home.window, home.document.getElementById('search'), '');
-  assert.equal(visibleCards(home.document).length, 36);
+  assert.equal(visibleCards(home.document).length, 40);
 });
 
 await test('family chips filter and highlight correctly', () => {
-  click(home.window, chip(home.document, 'family', 'Mom'));
-  assert.equal(visibleCards(home.document).length, 1);
+  click(home.window, chip(home.document, 'family', 'Family'));
+  assert.equal(visibleCards(home.document).length, 40);
   assert.equal(home.document.querySelectorAll('[data-filter="family"].chip-active').length, 1);
-  assert.ok(chip(home.document, 'family', 'Mom').classList.contains('chip-active'));
+  assert.ok(chip(home.document, 'family', 'Family').classList.contains('chip-active'));
 });
 
-await test('combined filters show the empty state', () => {
-  click(home.window, chip(home.document, 'category', 'Mains'));
+await test('a search with no matches shows the empty state', () => {
+  type(home.window, home.document.getElementById('search'), 'zzzz');
   assert.equal(visibleCards(home.document).length, 0);
   assert.equal(count(home.document), '0');
   assert.ok(!isHidden(home.document.getElementById('empty-state')));
@@ -125,7 +125,7 @@ await test('combined filters show the empty state', () => {
 
 await test('"Clear filters" resets search and every chip', () => {
   click(home.window, home.document.querySelector('[data-reset]'));
-  assert.equal(visibleCards(home.document).length, 36);
+  assert.equal(visibleCards(home.document).length, 40);
   assert.equal(home.document.getElementById('search').value, '');
   assert.equal(home.document.querySelectorAll('.chip-active').length, 2);
   assert.ok(isHidden(home.document.getElementById('empty-state')));
@@ -157,7 +157,7 @@ console.log('\nHomepage: ?q= deep link');
 const deepLinked = await load('index.html', { url: 'http://localhost/?q=arroz' });
 
 await test('server-side query filters the page and pre-fills the inputs', () => {
-  assert.equal(visibleCards(deepLinked.document).length, 6);
+  assert.equal(visibleCards(deepLinked.document).length, 7);
   assert.equal(deepLinked.document.getElementById('search').value, 'arroz');
   assert.equal(deepLinked.document.getElementById('header-search').value, 'arroz');
 });
@@ -167,9 +167,8 @@ deepLinked.dom.window.close();
 console.log('\nCollection routes');
 const mom = await load('mom/index.html');
 
-await test("Mom's page lists only Mom's recipes and highlights the tab", () => {
-  assert.equal(cards(mom.document).length, 1);
-  assert.equal(cards(mom.document)[0].dataset.family, 'Mom');
+await test("Mom's page loads and highlights the tab (no Mom recipes yet)", () => {
+  assert.equal(cards(mom.document).length, 0);
   assert.match(mom.document.querySelector('h1').textContent, /Mom's food/);
 
   const activeTabs = Array.from(mom.document.querySelectorAll('.nav-tab-active'));
@@ -185,9 +184,8 @@ mom.dom.window.close();
 
 const popular = await load('popular/index.html');
 
-await test('Popular page only shows featured recipes', () => {
-  assert.equal(cards(popular.document).length, 1);
-  assert.match(cards(popular.document)[0].dataset.searchText, /pot pie/);
+await test('Popular page loads (no featured recipes yet)', () => {
+  assert.equal(cards(popular.document).length, 0);
   assert.match(popular.document.querySelector('h1').textContent, /Popular recipes/);
 });
 
@@ -195,9 +193,8 @@ popular.dom.window.close();
 
 const grandma = await load('grandma/index.html');
 
-await test("Grandma's page only shows Grandma's recipes", () => {
-  assert.equal(cards(grandma.document).length, 1);
-  assert.equal(cards(grandma.document)[0].dataset.family, 'Grandma');
+await test("Grandma's page loads (no Grandma recipes yet)", () => {
+  assert.equal(cards(grandma.document).length, 0);
 });
 
 grandma.dom.window.close();
@@ -334,10 +331,10 @@ await test('switching back to EN restores English labels', () => {
 await test('filters keep working while Portuguese is active', () => {
   const doc = langPage.document;
   click(langPage.window, doc.querySelector('[data-set-lang="pt"]'));
-  click(langPage.window, chip(doc, 'family', 'Mom'));
+  click(langPage.window, chip(doc, 'family', 'Family'));
 
-  assert.equal(visibleCards(doc).length, 1);
-  assert.equal(visibleCards(doc)[0].dataset.family, 'Mom');
+  assert.equal(visibleCards(doc).length, 40);
+  assert.equal(visibleCards(doc)[0].dataset.family, 'Family');
 });
 
 await test('language switching runs without script errors', () => {

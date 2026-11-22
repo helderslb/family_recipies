@@ -19,5 +19,9 @@ steps:
 gallery:
   - >-
     https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795368095/family-recipes/arroz-de-marisco-2.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795369665/family-recipes/arroz-de-marisco-3.jpg
+  - >-
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795369665/family-recipes/arroz-de-marisco-4.jpg
 ---
 
