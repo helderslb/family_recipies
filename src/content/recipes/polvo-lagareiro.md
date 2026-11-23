@@ -2,7 +2,7 @@
 title: Polvo Lagareiro
 description: TBC
 image: >-
-  https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795366314/family-recipes/polvo-lagareiro-1.jpg
+  https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795466968/family-recipes/polvo-lagareiro-1.jpg
 author: Family
 family: Family
 category: Mains
@@ -18,8 +18,8 @@ steps:
   - TBC
 gallery:
   - >-
-    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795369659/family-recipes/polvo-lagareiro-2.jpg
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795466972/family-recipes/polvo-lagareiro-2.jpg
   - >-
-    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795372929/family-recipes/polvo-lagareiro-3.jpg
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795466977/family-recipes/polvo-lagareiro-3.jpg
 ---
 

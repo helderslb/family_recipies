@@ -2,7 +2,7 @@
 title: Bife de Atum
 description: TBC
 image: >-
-  https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795366289/family-recipes/bife-de-atum-1.jpg
+  https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795466885/family-recipes/bife-de-atum-1.jpg
 author: Family
 family: Family
 category: Mains
@@ -18,8 +18,8 @@ steps:
   - TBC
 gallery:
   - >-
-    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795369648/family-recipes/bife-de-atum-2.jpg
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795466890/family-recipes/bife-de-atum-2.jpg
   - >-
-    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795372919/family-recipes/bife-de-atum-3.jpg
+    https://res.cloudinary.com/wpb2phgo/image/upload/f_auto,q_auto/v1795466895/family-recipes/bife-de-atum-3.jpg
 ---
 
